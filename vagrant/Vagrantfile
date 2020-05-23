@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby  :
+
+machines = {
+  "master"   => {"memory" => "2048", "cpu" => "2", "ip" => "10", "image" => "ubuntu/bionic64"},
+  "node01"   => {"memory" => "1024", "cpu" => "2", "ip" => "21", "image" => "ubuntu/bionic64"},
+  "node02"   => {"memory" => "1024", "cpu" => "2", "ip" => "22", "image" => "centos/7"},
+  "registry" => {"memory" => "1024", "cpu" => "2", "ip" => "50", "image" => "centos/7"}
+}
+
+Vagrant.configure("2") do |config|
+
+  machines.each do |name, conf|
+    config.vm.define "#{name}" do |machine|
+      machine.vm.box = "#{conf["image"]}"
+      machine.vm.hostname = "#{name}.caiodelgado.dev"
+      machine.vm.network "private_network", ip: "192.168.200.#{conf["ip"]}"
+      machine.vm.provider "virtualbox" do |vb|
+        vb.name = "#{name}"
+        vb.memory = conf["memory"]
+        vb.cpus = conf["cpu"]
+        vb.customize ["modifyvm", :id, "--groups", "/Docker-DCA"]
+      end
+    end
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+    HOSTS=$(head -n7 /etc/hosts)
+    echo -e "$HOSTS" > /etc/hosts
+    echo '192.168.200.10  master.docker.example' >> /etc/hosts
+    echo '192.168.200.21  node01.docker.example' >> /etc/hosts
+    echo '192.168.200.22  node02.docker.example' >> /etc/hosts
+    echo '192.168.200.50  registry.docker.example' >> /etc/hosts
+    SHELL
+end

@@ -58,9 +58,9 @@ A recomendação para ambientes de produção do Docker EE é:
 
 ### Instalação
 
-Iremos instalar o Docker em máquinas virtuais para que possamos facilitar o estudo, para isto utilizaremos uma solução chamada **Vagrant** somado ao **Virtualbox**, você pode utilizar a solução de virtualização que preferir, porém eu indico que você siga exatamente como listado no curso uma vez que caso você precise de suporte eu possa lhe ajudar.
+Iremos instalar o Docker em máquinas virtuais para que possamos facilitar o estudo, para isto utilizaremos uma solução chamada **Vagrant** somado ao **Virtualbox**, você pode utilizar a solução de virtualização que preferir, porém eu indico que você siga exatamente como listado no curso porque caso você precise de suporte eu possa lhe ajudar.
 
-> Lembre-se de habilitar a virtualização Intel VT-x ou AMD SVN na UEFI/BIOS.
+> Lembre-se de habilitar a virtualização Intel VT-x ou AMD SVM na UEFI/BIOS.
 
 #### Instalando o Vagrant e Virtualbox 
 
@@ -82,3 +82,246 @@ Para Instalar o vagrant siga os passos:
 2.3. Para MacOS, clique sob o instalador e avance até o final da instalação.
 3. Após a instalação abra um terminal ou um prompt de comando e execute o comando `vagrant --version` para verificar se o pacote foi instalado com sucesso.
 
+##### Preparando o Ambiente
+
+Após instalar o **Vagrant** e o **Virtualbox**, podemos criar um diretório com um arquivo Vagrantfile.
+
+> O Vagrantfile é o arquivo do **Vagrant** responsável por criar nossa infraestrutura.
+
+```bash
+$ mkdir ~/docker 
+$ cd docker
+$ vim Vagrantfile
+```
+
+Adicione o conteúdo ao arquivo Vagrantfile
+
+```ruby
+# -*- mode: ruby -*-
+# vi: set ft=ruby  :
+
+machines = {
+  "master"   => {"memory" => "2048", "cpu" => "2", "ip" => "10", "image" => "ubuntu/bionic64"},
+  "node01"   => {"memory" => "1024", "cpu" => "2", "ip" => "21", "image" => "ubuntu/bionic64"},
+  "node02"   => {"memory" => "1024", "cpu" => "2", "ip" => "22", "image" => "centos/7"},
+  "registry" => {"memory" => "1024", "cpu" => "2", "ip" => "50", "image" => "centos/7"}
+}
+
+Vagrant.configure("2") do |config|
+
+  machines.each do |name, conf|
+    config.vm.define "#{name}" do |machine|
+      machine.vm.box = "#{conf["image"]}"
+      machine.vm.hostname = "#{name}.caiodelgado.dev"
+      machine.vm.network "private_network", ip: "192.168.200.#{conf["ip"]}"
+      machine.vm.provider "virtualbox" do |vb|
+        vb.name = "#{name}"
+        vb.memory = conf["memory"]
+        vb.cpus = conf["cpu"]
+        vb.customize ["modifyvm", :id, "--groups", "/Docker-DCA"]
+      end
+    end
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+    HOSTS=$(head -n7 /etc/hosts)
+    echo -e "$HOSTS" > /etc/hosts
+    echo '192.168.200.10  master.docker.example' >> /etc/hosts
+    echo '192.168.200.21  node01.docker.example' >> /etc/hosts
+    echo '192.168.200.22  node02.docker.example' >> /etc/hosts
+    echo '192.168.200.50  registry.docker.example' >> /etc/hosts
+    SHELL
+end
+```
+
+Para criar o ambiente do laboratório, execute o comando `vagrant up`, e o vagrant irá criar todas as máquinas virtuais bem como configurar os hostnames e endereços IP's
+Para se conectar as máquinas utilize o comando `vagrant ssh <host>` informando o nome do host a ser conectado, lembre-se de estar dentro da pasta com o Vagrantfile.
+Para desligar as máquinas execute o comando `vagrant halt`.
+Para destruir o ambiente execute o comando `vagrant destroy`.
+
+Execute o comando `vagrant up` para criar nossa infraestrutura.
+
+```bash
+$ cd ~/docker
+$ vagrant up
+``` 
+
+> Caso você queira saber mais sobre Vagrant eu tenho um post no meu blog onde ensino como utilizar o Vagrant para subir os laboratórios de estudo, para acessar basta clicar em [Vagrant-101](https://caiodelgado.dev/vagrant-101)
+
+Adicione também as seguintes entradas ao arquivo `hosts` da sua máquina.
+
+```bash
+# Docker
+192.168.200.10  master.docker.example
+192.168.200.21  node01.docker.example
+192.168.200.22  node02.docker.example
+192.168.200.50  registry.docker.example
+```
+
+> Em máquinas **Linux** e **MacOS** o arquivo fica localizado em `/etc/hosts`
+> Em máquinas **Windows** o arquivo fica localizado em `C:\Windows\System32\drivers\etc\hosts`
+
+
+#### Instalação do Docker 
+
+Existem duas maneiras de instalar o Docker
+* Script de Conveniência
+* Maneira Tradicional
+
+Iremos efetuar a instalação da maneira tradicional nas máquinas `master` e `node02` e com o script de conveniência nas máquinas `node01` e `registry`.
+
+#### Instalando Docker no Ubuntu
+
+Primeiramente vamos acessar a máquina `master`
+
+```bash
+$ cd ~/docker
+$ vagrant ssh master
+```
+
+Uma vez conectado na máquina docker, execute os seguintes comandos:
+
+```bash
+$ sudo apt update
+$ sudo apt install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common \
+    bash-completion -y
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+$ sudo apt update
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+Após a conclusão da instalação, podemos configurar agora nosso usuário para fazer parte do grupo `docker`, isso garantirá que possamos executar os comandos do docker sem a necessidade de elevar os privilégios.
+
+```bash
+$ sudo usermod -aG docker $USER
+```
+
+Vamos também instalar o recurso de `Bash Completion` através do comando:
+
+```bash
+$ sudo curl https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash -o /etc/bash_completion.d/docker-machine
+```
+
+Saia do terminal e inicie uma nova sessão e o usuário já poderá executar o comando como super user.
+```bash
+$ exit
+$ vagrant ssh master
+```
+
+#### Instalando Docker no CentOS
+
+Abra um novo terminal e acesse a máquina `node02`
+
+```bash
+$ cd ~/docker
+$ vagrant ssh node02
+```
+
+Uma vez conectado na máquina docker, execute os seguintes comandos:
+
+```bash
+$ sudo yum install -y yum-utils curl vim bash-completion
+$ sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+$ sudo yum install docker-ce docker-ce-cli containerd.io
+```
+
+Nos sistemas RHEL like, precisamos habilitar e iniciar o serviço após a instalação do mesmo
+
+```bash
+$ sudo systemctl enable docker
+$ sudo systemctl start docker
+```
+
+Após a conclusão da instalação, podemos configurar agora nosso usuário para fazer parte do grupo `docker`, isso garantirá que possamos executar os comandos do docker sem a necessidade de elevar os privilégios.
+
+```bash
+$ sudo usermod -aG docker $USER
+```
+
+Vamos também instalar o recurso de `Bash Completion` através do comando:
+
+```bash
+$ sudo curl https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash -o /etc/bash_completion.d/docker-machine
+```
+
+Saia do terminal e inicie uma nova sessão e o usuário já poderá executar o comando como super user.
+```bash
+$ exit
+$ vagrant ssh node02
+```
+
+#### Instalando Docker através do script de Conveniência.
+
+Os passos a seguir devem ser executados nas máquinas `node01` e `registry`, não esqueça de abrir um terminal novo para cada máquina e executar o comando `vagrant ssh <host>`
+
+A Docker disponibiliza um script de conveniência, que trata-se de uma maneira simples e rápida para instalar o Docker para ambientes de desenvolvimento, este script faz a validação da distribuição linux bem como instala os pacotes necessários para o funcionamento do Docker. 
+
+Para instalar o docker através do script de conveniência basta executar o comando
+
+```bash
+$ sudo curl -fsSL https://get.docker.com | bash
+```
+
+Nos sistemas RHEL like, precisamos habilitar e iniciar o serviço após a instalação do mesmo
+
+```bash
+$ sudo systemctl enable docker
+$ sudo systemctl start docker
+```
+
+Após a conclusão da instalação, podemos configurar agora nosso usuário para fazer parte do grupo `docker`, isso garantirá que possamos executar os comandos do docker sem a necessidade de elevar os privilégios.
+
+```bash
+$ sudo usermod -aG docker $USER
+```
+
+Vamos também instalar o recurso de `Bash Completion` através do comando:
+
+```bash
+$ sudo curl https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash -o /etc/bash_completion.d/docker-machine
+```
+
+#### Teste de Execução
+
+Para garantirmos que o docker foi instalado corretamente e esta funcional, podemos rodar nosso primeiro container e verificar o retorno na tela.
+
+```bash
+$ docker container run --rm -it hello-world
+```
+
+### Componentes
+
+Agora que rodamos nosso primeiro container, precisamos entender alguns componentes básicos da sua arquitetura e seu funcionamento.
+
+Ao executar o container com a imagem `hello-world` o Docker fez os seguintes passos:
+1. O `Docker Client` se comunicou com o `Docker Daemon`
+2. O `Docker Daemon` fez o download da imagem `hello-world` no Docker Hub
+3. O `Docker Daemon` criou um novo container, através da imagem que rodou o executável que produz o texto que vimos no terminal.
+4. O `Docker Daemon` enviou o texto diretamente para o `Docker Client` que enviou para nosso terminal.
+
+![Componentes](img/01/componentes.png)
+
+
+#### Docker Client
+
+O Docker Client é o pacote `docker-ce-cli` ele fornece os comandos do lado do cliente, como por exemplo o comando `docker container run`, que irá interagir com o Docker Daemon
+
+
+#### Docker Daemon 
+
+O Docker Daemon é o pacote `docker-ce` ele é o servidor propriamente dito, que receberá os comandos através do Docker Client e fornecerá os recursos de virtualização a nivel de sistema operacional.
+
+
+#### Docker Registry
+
+O Docker Registry é o local de armazenamento de imagens docker, normalmente o Docker hub, de onde o Docker Daemon receberá as imagens a serem executadas no processo de criação de um container.
