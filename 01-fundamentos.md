@@ -160,6 +160,52 @@ Adicione também as seguintes entradas ao arquivo `hosts` da sua máquina.
 > Em máquinas **Linux** e **MacOS** o arquivo fica localizado em `/etc/hosts`
 > Em máquinas **Windows** o arquivo fica localizado em `C:\Windows\System32\drivers\etc\hosts`
 
+#### Namespaces e Cgroups
+
+O Docker utiliza de recursos do linux como por exemplo namespaces, cgroups dentre vários outros que iremos falar futuramente para isolar os containers que serão executados.
+#### Namespaces 
+
+```mermaid
+graph TD
+    subgraph Namespaces
+        A[PID]
+        B[MNT]
+        C[IPC]
+        D[UTS]
+        D[NET]
+    end
+```
+* **PID**: Process ID
+* **MNT**: Mount Points
+* **IPC**: Comunicação Inter Processos
+* **UTS**: Unix Timesharing System (Kernel e Identificadores)
+* **NET**: Networking
+
+Os Namespaces fornecem isolamento para os containers, limitando seu acesso ao recursos do sistema e a outros namespaces. Isto significa, por exemplo, que um usuário root dentro de um container é diferente de um usuário root da máquina hospedeira.
+
+Com o isolamento, os sistemas em execução nos containers tem suas próprias árvores de processo, sistemas de arquivos, conexões de rede e muito mais.
+
+
+
+
+#### cgroups
+
+```mermaid
+graph TD
+    subgraph Cgroups
+        A[cpu]
+        B[cpuset]
+        C[memory]
+        D[device]
+    end
+```
+
+* **cpu**: Divisão de CPU por containers.
+* **cpuset**: CPU Masks, para limitar threads
+* **memory**: Memoria
+* **device**: Dispositivos 
+
+Os containers trabalham com cgroups (Control Groups) que fazem isolamento dos recursos físicos da maquina. Em geral os cgrops podem ser utilizados para controlar estes recursos tais como limites e reserva de CPU, limites e reserva de memória, dispositivos, etc…
 
 #### Instalação do Docker 
 
@@ -325,3 +371,149 @@ O Docker Daemon é o pacote `docker-ce` ele é o servidor propriamente dito, que
 #### Docker Registry
 
 O Docker Registry é o local de armazenamento de imagens docker, normalmente o Docker hub, de onde o Docker Daemon receberá as imagens a serem executadas no processo de criação de um container.
+
+#### Comandos Essenciais
+
+Iremos agora aprender alguns comandos essenciais do Docker.
+
+```bash
+docker --help
+```
+
+O primeiro passo para entendermos os comandos do docker é visualizar sua lista de comandos, iremos falar dos seguintes comandos de gerenciamento:
+
+* `docker container`
+* `docker image`
+* `docker network`
+* `docker system`
+* `docker volume`
+
+Para cada comando de gerenciamento acima, temos diversos subcomandos a serem executados, muitos deles são parecidos com comandos linux como por exemplo `ls`, `rm`, dentre outros
+
+Antigamente o comando utilizado para listar containers era o comando `docker ps` que ainda existe na documentação, porém é indicado que seja utilizado o novo comando `docker container ls`.
+
+> PS é o abreviamento de Process Status enquanto LS é o abreviamento de LIST 
+
+
+Existem diversos outros comandos que iremos ver ao longo do curso.
+
+#### Executando comandos
+
+Antes de executar os comandos do docker, vamos conectar na máquina node01.
+
+```bash
+vagrant ssh node01
+``` 
+
+
+Para visualizar informações do ambiente, podemos utilizar o comando **docker system info** o qual exibirá informações do Docker como versão, quantidade de containers em execução, storage drivers, entre outros
+```bash
+docker system info
+docker info
+```
+_Os comandos listados acima são equivalentes_
+
+Para listar containers, imagens, redes e volumes no docker, utilizamos o comando **docker** \<comando\> **ls**
+```bash
+docker container ls
+docker image ls
+docker network ls
+docker volume ls
+```
+* **docker container ls** - lista os containers
+* **docker image ls** - lista as imagens
+* **docker network ls** - lista as redes
+* **docker volume ls** - lista os volumes
+
+Para pesquisar por uma imagem, utilizamos o comando **docker search**
+```bash
+docker search debian
+```
+
+Para efetuar o download da imagem utilizamos o comando **docker image pull**
+```bash
+docker image pull debian
+```
+
+Para executar um contâiner, utilizamos o comando **docker container run**
+```bash
+docker container run -dit --name debian1 --hostname c1 debian
+```
+**Descrição do comando:**
+* **docker container run  (...) debian** - Executa um container, sendo o ultimo parâmetro o nome da imagem  a ser utilizada  
+* **-dit** - Executa um container como processo (**d** = Detached), habilitando a interação com o container (**i** = Interactive) e disponibiliza um pseudo-TTY(**t** = TTY)
+* **--name** - Define o nome do container
+* **--hostname** - Define o hostname do container
+
+Agora que temos nosso primeiro contâiner em execução, podemos listar os containers(**docker container ls**) e conectar ao mesmo através do comando **docker container attach**
+```bash
+docker container ls
+docker container attach debian1
+```
+_Note que ao se conectar ao container a PS1 será modificada para `root@c1:/#`
+
+Execute alguns comandos no container
+```bash
+ip -c a
+hostname
+cat /etc/hosts
+exit
+```
+
+Liste novamente os containers
+```bash
+docker container ls -a
+```
+_Note que agora o container está parado, isto aconteceu pois o processo principal do container recebeu um return code diferente de 0_
+
+Inicie novamente o container e conecte-se ao mesmo
+```bash
+docker container start debian1
+docker container attach debian1
+```
+_O comando **docker container start** inicia um container parado, o comando **docker container stop** para um container que esteja em execução_
+
+Utilize a sequencia de teclas **_\<CTRL\> + \<P\> + \<Q\>_** para se desconectar do container sem que ele seja parado. Este comando é chamado de _Read escape sequence_.
+```bash
+<CTRL> + <P> + <Q>
+docker container ls
+```
+_Note que agora o container ainda está em execução._
+
+Para verificar os logs do container utilizamos o comandoo **docker container logs**
+```bash
+docker container logs debian1
+```
+
+Pare e remova o container, após isto verifique os containers existentes
+```bash
+docker container stop debian1
+docker container rm debian1
+docker container ls -a
+```
+_Podemos utilizar o parâmetro **-f** no comando **docker container rm** para que o container seja removido mesmo que esteja sendo executado_
+
+Execute um novo container
+```bash
+docker container run -dit --name c1 --hostname server debian
+docker container ls
+```
+
+Crie um arquivo de teste na pasta atual para enviar ao container c1
+```bash
+echo "Arquivo de teste" > /tmp/arquivo
+docker container cp /tmp/arquivo c1:/tmp
+```
+_O comando **docker container cp** copia um arquivo da maquina host para o container ou vice-versa._
+
+Verifique se o arquivo existe dentro do container através do comando **exec**
+```bash
+docker container exec c1 ls -l /tmp
+docker container exec c1 cat /tmp/arquivo
+```
+_O comando **docker container exec** executa um comando no container e envia o retorno na saída padrão(STDOUT) da máquina, caso o container não tenha sido iniciado com a opção **-i** o retorno não será mostrado no STDOUT_
+
+Remova o container criado anteriormente
+```bash
+docker container rm -f c1
+``` 
