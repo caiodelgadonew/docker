@@ -509,7 +509,7 @@ docker image build -t dicas:v6 .
 
 Nunca utilize a tag `latest`. Ela pode receber alguma atualização e em um momento de update sua aplicação pode quebrar, dependendo de quanto tempo passou do seu ultimo build. Ao invés disso, utilize tags mais específicas.
 
- ![melhores-práticas-7](img/02/melhores-praticas7.png)
+ ![melhores-práticas-7](img/02/melhores-praticas-7.png)
 
 ```bash
 vim Dockerfile
@@ -548,5 +548,106 @@ openjdk             8-jre-alpine	84.9MB
 
 Agora temos uma diminuição enorme em nossa imagem pois estamos utilizando uma imagem base bem menor.
 
-![melhores-práticas-dica5](img/02/melhores-praticas-dica8.png)
+![melhores-práticas-dica8](img/02/melhores-praticas-dica8.png)
+
+### Dica #9: Multi-stage build
+
+Multi-stage build é um recurso muito poderoso que apareceu a partir do docker 17.05. Multistage builds são uteis para quem quer otimizar Dockerfiles enquanto mantém eles fáceis de ler e manter.
+
+Antes do Multi-stage build o maior desafio das imagens é de fato manter as imagens pequenas, vimos nos exemplos anteriores que conseguimos, ao utilizar algumas das melhores práticas, diminuir bastante o tamanho da imagem. Utilizando imagens slim ou alpine resolvem boa parte dos nossos problemas mas quando precisamos resolver algo mais  complexo podemos utilizar elas somadas ao Multistage build.
+
+O `multi-stage build` faz com que possamos utilizar diversas instruções `FROM` em um Dockerfile, e cada instrução pode utilizar uma imagem diferente, fazemos isto por exemplo para subir uma imagem, dentro desta imagem instalar os pacotes e coletar apenas os arquivos necessários diretamente para a imagem subsequente. Com isso temos uma imagem muito mais enxuta e otimizada.
+
+Por exemplo vamos criar esta imagem em GO pelo processo normal:
+
+```bash
+git clone https://github.com/alexellis/href-counter.git ~/dockerfiles/multistage
+cd ~/dockerfiles/multistage
+rm Docker*
+vim Dockerfile
+```
+
+```dockerfile
+FROM     golang:1.7.3
+WORKDIR  go/src/github.com/alexellis/href-counter/
+RUN      go get -d -v golang.org/x/net/html  
+COPY     app.go .
+RUN      CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+CMD      ["./app"]
+``` 
+
+```bash
+docker  image build -t multistage:v1 . 
+``` 
+
+Esta imagem ficou com o tamanho de `700MB`, porém o que precisamos nela é apenas o diretório `/go/src/github.com/alexellis/href-counter/app`, podemos então utilizar o multistage build para recolher estes arquivos, chamando a primeira imagem de builder através do parâmetro `AS <nome>` e depois invocar a imagem em um segundo estágio através do parâmetro `--from=<nome>`.
+
+```bash
+vim Dockerfile
+```
+
+```dockerfile
+FROM     golang:1.7.3 AS builder
+WORKDIR  /go/src/github.com/alexellis/href-counter/
+RUN      go get -d -v golang.org/x/net/html
+COPY     app.go    .
+RUN      CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+
+FROM     alpine:latest
+RUN      apk --no-cache add ca-certificates
+WORKDIR  /root/
+COPY     --from=builder /go/src/github.com/alexellis/href-counter/app .
+CMD      ["./app"]
+``` 
+
+![melhores-práticas-9](img/02/melhores-praticas-9.png)
+
+
+```bash
+docker  image build -t multistage:v2 . 
+``` 
+
+Agora tivemos uma "pequena" redução de `700MB` para `12MB`
+```bash
+docker image ls | head -n1 ; docker image ls | grep multistage
+``` 
+```bash
+REPOSITORY        TAG            IMAGE ID       CREATED          SIZE
+multistage        v1             dae3f0761024   28 minutes ago   700MB
+multistage        v2             a1108a2b5102   33 minutes ago   11.7MB
+``` 
+
+Caso deseje testar a imagem basta executar o comando
+```bash
+docker container run --rm -it -e url=https://youtube.com/caiodelgadonew multistage:v1
+docker container run --rm -it -e url=https://youtube.com/caiodelgadonew multistage:v2
+``` 
+
+Outra coisa interessante é que ao invés de utilizar uma imagem completa podemos puxar um arquivo de uma imagem já criada anteriormente através da flag `--from=<image>:<tag>`, vamos fazer a cópia de um arquivo da imagem da dica 7 para a imagem do multistage, para isto criaremos um diretório chamado multistage2.
+
+```bash
+mkdir -p ~/dockerfiles/multistage2
+cd ~/dockerfiles/multistage2
+vim Dockerfile
+```
+
+```dockerfile
+FROM     alpine:latest
+WORKDIR  /root/
+COPY     --from=dicas:v7 /samples/1.txt .
+CMD      ["cat", "1.txt"]
+``` 
+
+
+```bash
+docker image build -t multistage:v3 .
+``` 
+
+Podemos agora executar nosso container para verificar se o `arquivo 1.txt` é de fato o  arquivo extraido da imagem `dica:v7`
+
+```bash
+docker container run --rm -it multistage:v3
+```
+
+É sempre bom tentar diminuir as imagens de docker e seguir as melhores práticas, isso faz com que nosso tempo de deploy ou scale da aplicação seja menor, bem como a necessidade de um armazenamento maior e diversos outros fatores.
 
