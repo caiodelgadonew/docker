@@ -144,15 +144,11 @@ docker container inspect servidor --format '{{json .Mounts }}' | jq
 docker container inspect servidor2 -f '{{json .Mounts }}' | jq
 ```
 
-CONTINUAR https://docs.docker.com/storage/bind-mounts/
-
-
 ### Selinux Labels
 
 O mode `:z` indica que o conteúdo do bind mount é compartilhado entre multiplos containers
 
 O mode `:Z` indica que o conteúdo do bind mount é privado e não compartilhado
-
 
 Para remover um volume no docker podemos utilizar a opção **rm**
 ```bash
@@ -164,5 +160,145 @@ _O comando **docker volume ls -q** lista os volumes por **id**_
 > **ATENÇÃO:** a remoção do volume através do comando **_docker volume rm_** faz com que o volume seja excluído, não sendo possível a recuperação dos dados.
 
 
-### Volumes Personalizados
+### tmpfs mounts
 
+Volume e bind mounts permitem que compartilhemos arquivos entre a máquina hospedeira e o container, de maneira a persistir os dados após o container ser parado.
+
+Outro tipo de volume é o `tmpfs`. quando criamos um container com `tmpfs` mount, o container pode criar arquivos fora da camada de escrita do container.
+
+Diferente de volumes e bind mounts, um `tmpfs` é uma montagem temporária, e só persiste na memória do host. Quando o container para, o `tmpfs` mount é removido e os arquivos que foram criados lá não persistem em disco.
+
+`tmpfs` mounts são uteis para armazenar temporariamente informação sensível das quais não gostariamos de persistir no host ou na camada de escrita.
+
+Para criar uma montagem `tmpfs` utilizamos o comando `--tmpfs`
+
+Existem algumas diferenças que precisamos saber entre `tmpfs` e `bind` mounts.
+
+- a flag `--tmpfs` não possibilita o uso de opções configuraveis.
+- a flag `--tmpfs` não pode ser utilizada com serviços swarm. (Apenas `--mount`)
+
+Utilizando uma montagem do tipo `tmpfs`
+
+
+```bash
+docker container run -dit --name tmpfstest1 --mount type=tmpfs,destination=/app debian
+docker container run -dit --name tmpfstest2 --tmpfs /app debian
+```
+
+Vamos inspecionar os containers
+
+```bash
+docker container inspect tmpfstest1 --format '{{json .Mounts }}' | jq
+docker container inspect tmpfstest2 -f '{{json .HostConfig.Tmpfs }}' | jq
+```
+
+> A diferença entre os modos de montagem é vista através do `docker container inspect` e a seção de mounts e host config.
+
+Vamos remover os containers
+
+```bash
+docker container rm -f tmpfstest1 tmpfstest2
+``` 
+
+O `tmpfs` mount possibilita duas opções de configuração (Não obrigatórias), que apenas funcionam através da opção `--mount`
+
+
+| Opção        | Descrição                                                             |
+| ------------ | --------------------------------------------------------------------- |
+| `tmpfs-size` | Tamanho em bytes, por padrão não existe limite                        |
+| `tmpfs-mode` | Permissionamento do tmpfs em octal. Ex: `700` ou `0770`. Padrão `1777`|    
+
+Exemplo:
+
+```bash
+docker container run -dit --name tmpfstest --mount type=tmpfs,destination=/app,tmpfs-size=100M debian
+docker container inspect tmpfstest --format '{{json .HostConfig.Mounts }}' | jq
+docker container exec tmpfstest df -Th
+docker container rm -f $(docker container ls -aq)
+```
+
+## Backup & Restore
+
+Podemos utilizar volumes para fazer backups, restaurações ou migrações de sistemas, para isto utilizamos a flag `--volumes-from` para criar um novo container que utilize o mesmo volume utilizado anteriormente.
+
+### Backup
+
+Vamos criar um container básico com o nome de `webserver` e copiar alguns arquivos para o mesmo
+
+```bash
+docker container run -dit -v /webdata --name webserver debian
+docker container cp ~/dockerfiles webserver:/webdata
+docker container exec webserver ls -lR /webdata
+docker container exec webserver df -Th
+docker volume ls
+```
+
+> Veja que foi criado um volume do tipo anônimo. 
+
+Para entender como isto funciona, podemos subir um novo container utilizando este volume do container `webserver`
+
+```bash
+docker container run -dit --volumes-from webserver --name volumetest debian
+docker container exec volumetest df -Th
+docker container exec volumetest ls -lR /webdata
+docker container inspect webserver --format '{{json .Mounts }}' | jq
+docker container inspect volumetest --format '{{json .Mounts }}' | jq
+docker container rm -f volumetest
+```
+
+Note que os volumes são os mesmos, com isso podemos efetuar o backup dos arquivos do container subindo um container extra com o propósito de empacotar os arquivos.
+
+```bash
+mkdir ~/backup
+cd ~/backup
+docker container run --rm --volumes-from webserver -v $(pwd):/backup alpine tar cvf backup.tar /webdata
+tar -tvf backup.tar
+```
+
+O container com a imagem do alpine foi executado com a finalidade única de empacotar o conteúdo do diretório `/webdata` em um novo arquivo `backup.tar`
+
+```bash
+drwxr-xr-x root/root         0 2021-06-24 07:05 webdata/
+drwxrwxr-x 1000/1000         0 2021-06-24 07:05 webdata/dockerfiles/
+-rw-rw-r-- 1000/1000         0 2021-06-24 07:05 webdata/dockerfiles/arquivo2.txt
+-rw-rw-r-- 1000/1000         0 2021-06-24 07:05 webdata/dockerfiles/arquivo3.txt
+-rw-rw-r-- 1000/1000         0 2021-06-24 07:05 webdata/dockerfiles/arquivo1.txt
+````
+
+Vamos agora remover todos os containers e volumes criados
+```bash
+docker container rm -f $(docker container ls -aq)
+docker volume rm -f $(docker volume ls -q)
+```
+
+### Restore 
+
+Para restaurar o volume para um novo container primeiramente iremos criar o novo container com um novo volume.
+
+```bash
+docker container run -dit -v /webdata --name webserver2 debian
+docker container exec webserver2 ls -lR /webdata
+```
+
+Agora podemos subir um novo container com o 
+
+```bash
+docker container run --rm --volumes-from webserver2 -v $(pwd):/backup alpine ash -c "cd /webdata && tar xvf /backup/backup.tar --strip 1"
+
+docker container exec webserver2 ls -lR /webdata
+```
+
+## Plugins
+
+Plugins são utilizados para extender as funcionalidades do Docker. 
+Atualmente o Docker suporta os plugins de Autorização, Redes e Volumes. 
+
+Para gerenciamento de plugins, utilizamos o comando `docker plugin`
+
+> Para uma lista completa dos plugins veja [Docker Engine Plugins](https://docs.docker.com/engine/extend/legacy_plugins/)
+
+## Volume Plugins
+
+> Lista completa com definições [Volume Plugins](https://docs.docker.com/engine/extend/legacy_plugins/#volume-plugins)
+
+Para gerenciamento de plugins, utilizamos o comando `docker plugin`
