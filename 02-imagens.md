@@ -651,3 +651,8 @@ docker container run --rm -it multistage:v3
 
 É sempre bom tentar diminuir as imagens de docker e seguir as melhores práticas, isso faz com que nosso tempo de deploy ou scale da aplicação seja menor, bem como a necessidade de um armazenamento maior e diversos outros fatores.
 
+### Removendo todas as imagens
+
+```bash
+docker image pune -a
+``` 
