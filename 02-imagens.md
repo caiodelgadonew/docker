@@ -546,6 +546,21 @@ openjdk             8-jre-slim  	184MB
 openjdk             8-jre-alpine	84.9MB
 ``` 
 
+```bash
+vim Dockerfile
+```
+
+```dockerfile
+FROM       openjdk:8-jre-alpine
+COPY       app/target/app.jar /app/app.jar
+COPY       app/samples /samples
+ENTRYPOINT  ["java", "-jar", "/app/app.jar"]
+```
+
+```bash
+docker image build -t dicas:v8 .
+```
+
 Agora temos uma diminuição enorme em nossa imagem pois estamos utilizando uma imagem base bem menor.
 
 ![melhores-práticas-dica8](img/02/melhores-praticas-dica8.png)
@@ -609,7 +624,7 @@ docker  image build -t multistage:v2 .
 
 Agora tivemos uma "pequena" redução de `700MB` para `12MB`
 ```bash
-docker image ls | head -n1 ; docker image ls | grep multistage
+docker image ls | egrep "REPOSITORY|multistage"
 ``` 
 ```bash
 REPOSITORY        TAG            IMAGE ID       CREATED          SIZE
