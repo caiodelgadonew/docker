@@ -293,12 +293,132 @@ docker container exec webserver2 ls -lR /webdata
 Plugins são utilizados para extender as funcionalidades do Docker. 
 Atualmente o Docker suporta os plugins de Autorização, Redes e Volumes. 
 
+Plugins são distribuidos como imagens docker e podem ser armazenados no Docker Hub ou em um private registry.
+
 Para gerenciamento de plugins, utilizamos o comando `docker plugin`
 
 > Para uma lista completa dos plugins veja [Docker Engine Plugins](https://docs.docker.com/engine/extend/legacy_plugins/)
+
 
 ## Volume Plugins
 
 > Lista completa com definições [Volume Plugins](https://docs.docker.com/engine/extend/legacy_plugins/#volume-plugins)
 
-Para gerenciamento de plugins, utilizamos o comando `docker plugin`
+Os plugins de volumes habilitam com que os volumes docker persistam através de diversos docker hosts.
+
+### Instalando um plugin
+
+Iremos instalar um plugin chamado `sshfs` que trata-se de um plugin para sistema de arquivos baseado em SSH.
+
+> O exemplo utilizado deve ser utilizado apenas para fins de estudo, uma vez que o volume seja criado, sua senha ssh para o host remoto será exposta como texto plano quando inspecionar o volume. 
+
+1. Instale o plugin `sshfs`
+```bash
+docker plugin install vieux/sshfs
+```
+
+O plugin irá solicitar acesso a alguns privilégios.
+- Acesso a rede `host`
+- Acesso a capability `CAP_SYS_ADMIN` que habilita o plugin a executar o comando mount.
+- Acesso ao ponto de montagem
+- acesso ao dispositivo `/dev/fuse` ou Filesystem in Userspace
+
+2. Verifique se o plugin foi instalado e está habilitado
+```bash
+docker plugin ls
+```
+
+3. Na máquina destino, garanta que o ssh está habilitado com usuário e senha. Em um novo terminal
+```bash
+$ vagrant ssh node02
+$ sudo yum install vim -y
+$ sudo vim /etc/ssh/sshd_config
+                    
+                    PasswordAuthentication yes
+
+$ sudo systemctl restart sshd
+```
+
+4. Crie um volume utilizando o plugin.
+```bash
+$ docker volume create -d vieux/sshfs --name sshvolume -o sshcmd=vagrant@10.20.20.120:/vagrant -o password=vagrant
+$ docker volume ls
+$ docker volume inspect sshvolume | jq
+``` 
+
+5. Inicie um container com o volume
+```bash
+$ docker container run --rm -v sshvolume:/data alpine ls /data
+```
+
+### Volume NFS
+
+
+Na máquina master vamos instalar um servidor NFS e mapear um diretório
+```bash
+$ vagrant ssh master
+$ sudo apt-get update
+$ sudo apt-get install nfs-server -y
+$ mkdir -p /home/vagrant/storage
+$ echo "/home/vagrant/storage/ 10.20.20.0/24(rw)" | sudo tee -a /etc/exports
+$ echo "<h1> Volume NFS master.docker-dca.example</h1>" | tee  /home/vagrant/storage/index.html
+$ sudo systemctl restart nfs-server
+$ showmount -e
+```
+
+Na máquina node01 vamos instalar o client nfs 
+```bash
+$ vagrant ssh node01
+$ sudo apt-get install nfs-common -y
+$ sudo showmount -e master.docker-dca.example
+```
+
+Na máquina node02 vamos instalar o client nfs
+```bash
+$ vagrant ssh node02
+$ sudo yum install nfs-utils -y
+$ sudo showmount -e master.docker-dca.example
+```
+
+Instale o plugin NFS na máquina node01 e node02
+```bash
+$ docker plugin install trajano/nfs-volume-plugin --grant-all-permissions
+``` 
+
+O plugin irá solicitar acesso a alguns privilégios.
+- Acesso a rede `host`
+- Acesso a capability `CAP_SYS_ADMIN` que habilita o plugin a executar o comando mount.
+- Acesso ao ponto de montagem `/sys/fs/cgroup`
+
+
+Crie o volume na máquina node01
+```bash
+$ docker volume create -d trajano/nfs-volume-plugin \
+--opt device=master.docker-dca.example:/home/vagrant/storage \
+--opt  nfsopts=hard,proto=tcp,nfsvers=3,intr,nolock volume_nfs
+
+$ docker volume inspect volume_nfs | jq
+```
+
+Execute um container com o volume nfs
+```bash
+$ docker container run -dit --name webserver -v volume_nfs:/usr/share/nginx/html/ -p 80:80 nginx
+$ docker volume inspect volume_nfs | jq
+``` 
+
+Verifique nas máquinas o conteudo
+```bash
+$ watch curl -s localhost
+```
+
+Altere o conteudo do index.html na máquina master e verifique o conteudo em tempo real nas máquinas node01 e node02
+
+```bash
+$ echo "<h2> Novo conteudo para o volume compartilhado</h2>" | tee -a /home/vagrant/storage/index.html
+$ echo "<marquee> Se inscreva no canal https://youtube.com/caiodelgadonew</marquee>" | tee -a /home/vagrant/storage/index.html
+```
+
+Remova os containers dos nodes
+```bash
+$ docker container rm -f webserver
+```
