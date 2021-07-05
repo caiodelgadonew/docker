@@ -251,7 +251,7 @@ Note que os volumes são os mesmos, com isso podemos efetuar o backup dos arquiv
 ```bash
 mkdir ~/backup
 cd ~/backup
-docker container run --rm --volumes-from webserver -v $(pwd):/backup alpine tar cvf backup.tar /webdata
+docker container run --rm --volumes-from webserver -v $(pwd):/backup alpine tar cvf /backup/backup.tar /webdata
 tar -tvf backup.tar
 ```
 
