@@ -1,5 +1,6 @@
 ### Storage Drivers
 
+Storage Drivers possibilitam a criação de dados em uma camada gravável do container. Os arquivos não serão persistidos após o container ser deletado, ambas velocidades de leitura e escrita tem performance mais lentas que um sistema de arquivos.
 
 ```mermaid
 graph TD
