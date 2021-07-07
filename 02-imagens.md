@@ -535,7 +535,7 @@ docker image pull openjdk:8
 docker image pull openjdk:8-jre
 docker image pull openjdk:8-jre-slim
 docker image pull openjdk:8-jre-alpine
-docker image ls | head -n1 ; docker image ls | grep openjdk
+docker image ls | egrep "REPOSITORY|openjdk"
 ```
 
 ```bash
