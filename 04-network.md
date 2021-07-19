@@ -283,7 +283,7 @@ $ docker container exec -it container2 cat /etc/resolv.conf
 $ docker container rm -f container1 container2
 ``` 
 
-Podemos também configurar estas opções como padrão no arquivo `/etc/daemon.json`
+Podemos também configurar estas opções como padrão no arquivo `/etc/docker/daemon.json`
 ```json
 {
     "dns": ["8.8.8.8", "8.8.4.4"]
