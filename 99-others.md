@@ -1,3 +1,7 @@
+## ESCREVER
+
+* HORIZONTAL SCALING / VERTICAL SCALING
+* --constraint node.role==manager
 
 #### Security
 ```mermaid
