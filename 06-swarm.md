@@ -861,73 +861,55 @@ $ docker service scale wordpress-stack_wordpress=6
 $ ab -n 10000 -c 100 http://master.docker-dca.example:8080/
 ``` 
 
+Remova a stack
+```bash
+$ docker stack rm wordpress-stack
+``` 
 
-### Traefik com Stack
+### Traefik com Stack (Extra)
 
-Vamos adicionar o traefik agora para trabalhar como proxy reverso e entregar nosso 
+Para finalizar, vamos fazer um deploy de uma stack do jogo "dockersupermario" com o traefik fazendo proxy reverso.
 
+Primeiramente vamos criar a rede para o traefik.
+```bash
+$ docker network create -d overlay proxy
+```
+
+Vamos criar os arquivos compose para o container do supermario.
 
 ```bash
-$ vim wordpress.yml
+$ vim supermario.yml
 ``` 
 
 ```yml
 version: "3.9"
 
-volumes:
-  mysql_db:
-    driver: trajano/nfs-volume-plugin
-    driver_opts:
-      device: master.docker-dca.example:/home/vagrant/mysql_db
-      nfs_opts: hard,proto=tcp,nfsvers=3,intr,nolock
-
 networks:
-  wp_overlay:
-
+  proxy:
+    external: true
 
 services:
 
-  wordpress:
-    image: wordpress
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wpuser
-      WORDPRESS_DB_PASSWORD: caiodelgadonew@youtube
-      WORDPRESS_DB_NAME: wordpress
+  supermario:
+    image: caiodelgadonew/docker-supermario
     networks:
-      - wp_overlay
+      - proxy
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
       resources:
         limits:
           cpus: "1"
-          memory: 60M
+          memory: 100M
         reservations:
           cpus: "0.5"
-          memory: 30M
+          memory: 60M
       labels:
-        - "traefik.http.routers.wordpress.rule=Host(`wordpress.docker-dca.example`)"
-        - "traefik.http.services.wordpress-service.loadbalancer.server.port=80"
-
-  db:
-    image: mysql:5.7
-    volumes:
-      - mysql_db:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wpuser
-      MYSQL_PASSWORD: caiodelgadonew@youtube
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
-    networks:
-       - wp_overlay
-    deploy:
-      mode: replicated
-      replicas: 1 
-      restart_policy:
-        condition: on-failure
+        - "traefik.enable=true"
+        - "traefik.http.routers.game.rule=Host(`supermario.docker-dca.example`)"
+        - "traefik.http.services.game.loadbalancer.server.port=8080"
 ``` 
 
 Vamos criar agora a stack do Traefik
@@ -939,23 +921,23 @@ $ vim traefik.yml
 version: '3.9'
 
 networks:
-  wordpress_wp_overlay:
+  proxy:
     external: true
 
 services:
   traefik:
-    image: "traefik:v2.0.0"
+    image: "traefik:v2.4"
     command:
       - --entrypoints.web.address=:80
-      - --providers.docker
-      - --providers.docker.swarmmode=true
+      - --providers.docker.swarmMode=true
+      - --providers.docker.exposedByDefault=false
       - --api
     ports:
       - 80:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - wordpress_wp_overlay
+      - proxy
     deploy:
       mode: global
       placement:
@@ -964,18 +946,18 @@ services:
       restart_policy:
         condition: on-failure
       labels:
+        - "traefik.enable=true"
         - "traefik.http.routers.traefik.rule=Host(`dashboard.docker-dca.example`)"
         - "traefik.http.routers.traefik.service=api@internal"
-        - "traefik.http.services.traefik-service.loadbalancer.server.port=80"
-
+        - "traefik.http.services.traefik.loadbalancer.server.port=80"
 ```
 
 Efetue o deploy das stacks
 ```bash
-$ docker stack deploy -c wordpress.yml wordpress
+$ docker stack deploy -c supermario.yml supermario
 $ docker stack deploy -c traefik.yml traefik
 $ docker stack ls
-$ docker stack services wordpress
+$ docker stack services supermario
 $ docker stack services traefik
 ```
 
@@ -986,8 +968,23 @@ $ vim /etc/hosts
 ```
 
 ```bash
-10.20.20.100    master.docker-dca.example wordpress.docker-dca.example dashboard.docker-dca.example
-
+10.20.20.100    master.docker-dca.example supermario.docker-dca.example dashboard.docker-dca.example
 ```
 
-https://doc.traefik.io/traefik/providers/docker/
+Podemos também escalar nosso serviço
+```bash
+$ docker service scale supermario_supermario=6
+$ docker stack services supermario
+$ docker stack ps supermario 
+```
+
+No dashboard do traefik conseguimos ver a quantidade de nós e as informações do serviço
+
+http://dashboard.docker-dca.example/
+
+
+Após o termino, remova as stacks
+```bash
+$ docker stack rm traefik
+$ docker stack rm supermario
+``` 
