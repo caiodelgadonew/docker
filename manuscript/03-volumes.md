@@ -50,7 +50,7 @@ Existem 3 tipos de Volumes:
 
 Existem alguns tipos de montagem para os volumes. O volume do tipo **host** tem sua montagem realizada como um **bind mount** e existe ainda um volume do tipo **tmpfs mount** o qual reside na memória do sistema (volátil)
 
-![Mounts](img/03/mounts.png)
+![Mounts](resources/03mounts.png)
 
 Existem algumas vantagens ao se utilizar volumes do Docker ao invés de **bind mounts**
 

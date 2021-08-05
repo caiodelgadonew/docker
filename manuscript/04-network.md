@@ -63,7 +63,7 @@ $ docker network ls
 
 É a rede padrão do Docker, caso o container seja criado sem especificar um driver de rede a rede do tipo bridge é utilizada. Esta rede é criada utilizando um driver de rede de ponte que instancia uma interface de rede no linux chamada de dockerX sendo X um numero. Por padrão a rede bridge conta com um serviço interno de DNS, ou seja, os containers respondem internamente através de seu nome. Também é possivel conectar e desconectar containers on-the-fly.
 
-![bridge](img/04/bridge.png)
+![bridge](resources/04bridge.png)
 
 
 Para executar um container com a rede bridge podemos passar a flag `--network bridge` como parametro do comando `docker container run`
@@ -96,7 +96,7 @@ $ docker container rm -f webserver
 É a rede onde o IP da máquina é compartilhado com o container, nesta rede não é possível existir dois containers utilizando a mesma porta de rede.
 
 
-![host](img/04/host.png)
+![host](resources/04host.png)
 
 
 Para executar um container com a rede host podemos passar a flag `--network host` no comando docker run
@@ -120,7 +120,7 @@ $ docker container rm -f webserver
 
 É a ausência de rede, utilizamos este driver para criar um container que será inacessível por rede, sendo assim completamente isolado.
 
-![none](img/04/none.png)
+![none](resources/04none.png)
 
 
 Para executar um container com a rede host podemos passar a flag `--network host` no comando docker run
@@ -145,13 +145,13 @@ $ docker container rm -f sem-rede
 
 É a rede onde utilizamos os recursos de VLAN para fazer a separação lógica da rede, através dela podemos fornecer endereços IP para os containers que serão roteáveis para a rede física.
 
-![macvlan](img/04/macvlan.png)
+![macvlan](resources/04macvlan.png)
 
 ### Overlay
 
 É a rede de sobreposição, na qual é criada uma rede lógica onde são suportados diversas redes hosts. Este tipo de recurso é utilizado ao se trabalhar com Docker Swarm (clusters)
 
-![overlay](img/04/overlay.png)
+![overlay](resources/04overlay.png)
 
 _Falaremos de redes overlay no assunto Docker Swarm Cluster_ 
 

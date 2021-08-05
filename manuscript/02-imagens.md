@@ -8,7 +8,7 @@ Autor: Caio Delgado
 
 Estas imagens ficam armazenadas em repositórios locais e/ou remotos, um exemplo de repositório remoto é o DockerHub que é um repositório publico de imagens docker onde podemos escolher e utilizar as imagens para subir nossos containers. 
 
-![Dockerhub](img/02/dockerhub.png)
+![Dockerhub](resources/02dockerhub.png)
 
 Serviços Fornecidos pelo **Dockerhub**:
 * Hospedagem de Imagens Docker;
@@ -19,11 +19,11 @@ Serviços Fornecidos pelo **Dockerhub**:
 #### Criando uma conta no Dockerhub
 
 Acesse o endereço https://hub.docker.com e clique em **Sign Up** para criar uma conta, preencha com os seus dados e clique em **Continue**
-![Registro](img/02/dockerhub1.png)
+![Registro](resources/02dockerhub1.png)
 
 Confirme o cadastro em seu e-mail e logue no **Docker Hub** através do link **Sign In**
 
-![login](img/02/dockerhub2.png)
+![login](resources/02dockerhub2.png)
 
 Logue no terminal com o usuário criado através do comando **docker login** e digite sua senha
 ```bash
@@ -47,11 +47,11 @@ Uma imagem Docker é um pacote executável que inclui tudo o que é necessário 
 
 As imagens do Docker possuem camadas intermediárias que aumentam a capacidade de reutilização, diminuem o uso do disco e aceleram a construção do docker, permitindo que cada etapa seja armazenada em cache. Essas camadas intermediárias não são mostradas por padrão.
 
-![Docker Image](img/02/imagem.png)
+![Docker Image](resources/02imagem.png)
 
 A principal diferença entre um container e uma imagem é a camada gravável superior. Todas as gravações no container que adicionam novos dados ou modificam dados existentes são armazenados nessa camada gravável. Quando o container é excluido, a camada gravável também é excluida. A imagem subjacente permanece inalterada.
 
-![Docker Images e Containers](img/02/containers.png)
+![Docker Images e Containers](resources/02containers.png)
 
 Um ponto interessante é que em um cenário onde temos 1 container com a imagem `ubuntu:18.04` por exemplo, ocuparia `200MB` ( estamos considerando este tamanho para a imagem citada) somados a quantidade de dados específicos deste container ( vamos considerar `50MB` para este exemplo) totalizando `250MB`. o mesmo caso com 10 containers serão utilizados os `200MB` da imagem somados aos 50MB de cada container em execução, pois suas camadas readonly é compartilhada, totalizando assim `750MB` no total. 
 
@@ -124,7 +124,7 @@ _No comando acima, estamos passando através de um subshell o comando **docker c
 
 O Dockerfile é um arquivo de instruções de como deve ser gerada a imagem Docker, através deste arquivo podemos criar novas imagens para serem utilizadas.
 
-![Dockerfile](img/02/dockerfile.png)
+![Dockerfile](resources/02dockerfile.png)
 
 
 O Docker pode criar imagens automaticamente, lendo as instruções de um **Dockerfile**, que é um documento de texto que contém as instruções para a criação de uma imagem docker através docomando **docker build**.
@@ -243,7 +243,7 @@ docker logout
 
 As imagens enviadas podem ser visualizadas na sua página do dockerhub e todos os usuários podem efetuar o download da mesma com o comando **docker image pull usuario/imagem:versao** desde que o repositório seja público
 
-![Repositório](img/02/dockerhub3.png)
+![Repositório](resources/02dockerhub3.png)
 
 ### Melhores práticas com o Dockerfile 
 
@@ -358,7 +358,7 @@ git clone https://github.com/caiodelgadonew/java-wc-app.git app
 
 A ordem dos passos de build é importante, se o cache de um primeiro passo é invalidado pela modificação de arquivos ou linhas do Dockerfile, os arquivos subsequentes do build quebrarão. Sempre faça a ordenação dos passos do que sofrerá menos mudanças para o que sofrerá mais mudança.
 
-![melhores-práticas-1](img/02/melhores-praticas-1.png)
+![melhores-práticas-1](resources/02melhores-praticas-1.png)
 
 ```bash
 vim Dockerfile
@@ -380,7 +380,7 @@ docker image build -t dicas:v1 .
 
 Só copie o necessário. Se possível evite o `COPY`. Quando copiamos arquivos para nossa imagem, tenha certeza que você está sendo bem específico sob o que quer copiar, qualquer mudança no arquivo copiado quebrará o cache. Copiaremos então apenas a aplicação para a imagem, desta maneira as mudanças nos arquivos não afetarão o cache.
 
-![melhores-práticas-2](img/02/melhores-praticas-2.png)
+![melhores-práticas-2](resources/02melhores-praticas-2.png)
 
 ```bash
 vim Dockerfile
@@ -403,7 +403,7 @@ docker image build -t dicas:v2 .
 
 Cada instrução `RUN` cria uma unidade de cache e uma nova camada de imagem, agrupar todos os comandos `RUN` em uma única instrução pode melhorar o desempenho e diminuir a quantidade de camadas uma vez que eles se tornarão uma unidade única cacheavel.
 
-![melhores-práticas-3](img/02/melhores-praticas-3.png)
+![melhores-práticas-3](resources/02melhores-praticas-3.png)
 
 ```bash
 vim Dockerfile
@@ -429,7 +429,7 @@ docker image build -t dicas:v3 .
 Remover as dependencias desnecessárias e não instalar pacotes de debug é uma boa prática, como por exemplo trocar o `jdk` (Java Development Kit) pelo `jre` (Java Runtime Environment) que é um pacote relativamente menor e contem apenas o necessário para execução. Você pode instalar as ferramentas de debug posteriormente caso necessite. O instalador de pacotes `apt` possui uma flag `--no-install-recommends` que garante que dependencias que não são necessárias não sejam instaladas. Caso precise, adicione elas explicitamente.
 
 
-![melhores-práticas-4](img/02/melhores-praticas-4.png)
+![melhores-práticas-4](resources/02melhores-praticas-4.png)
 
 ```bash
 vim Dockerfile
@@ -451,13 +451,13 @@ docker image build -t dicas:v4 .
 
 Com a **Dica #4** podemos notar uma diminuição consideravel no tamanho de nossa imagem.
 
-![melhores-práticas-dica4](img/02/melhores-praticas-dica4.png)
+![melhores-práticas-dica4](resources/02melhores-praticas-dica4.png)
 
 ### Dica #5: Remover o cache do gerenciador de pacotes
 
  O gerenciador de pacotes mantem seu próprio cache, o  apt por exemplo guarda seu cache no diretório `/var/lib/apt/lists` e `/var/cache/apt/`. Uma das maneiras de lidar com este problema é remover o cache na mesma instrução que o pacote foi instalado. Remover este cache em outra instrução não irá diminuir o tamanho da imagem.
 
- ![melhores-práticas-5](img/02/melhores-praticas-5.png)
+ ![melhores-práticas-5](resources/02melhores-praticas-5.png)
 
 ```bash
 vim Dockerfile
@@ -481,14 +481,14 @@ docker image build -t dicas:v5 .
 
 Agora com a **Dica #5** nossa imagem ficou relativamente menor.
 
-![melhores-práticas-dica5](img/02/melhores-praticas-dica5.png)
+![melhores-práticas-dica5](resources/02melhores-praticas-dica5.png)
 
 ### Dica #6: Utilize imagens oficiais quando possível
 
 Imagens oficiais podem ajudar muito e reduzir bastante o tempo preparando a imagem, isto porque os passos de instalação já vem prontos e normalmente com as melhores praticas aplicadas, isto também fará você ganhar tempo caso tenha multiplos projetos, eles compartilham as mesmas camadas e utilizam a mesma imagem base.
 
 
- ![melhores-práticas-6](img/02/melhores-praticas-6.png)
+ ![melhores-práticas-6](resources/02melhores-praticas-6.png)
 
 ```bash
 vim Dockerfile
@@ -509,7 +509,7 @@ docker image build -t dicas:v6 .
 
 Nunca utilize a tag `latest`. Ela pode receber alguma atualização e em um momento de update sua aplicação pode quebrar, dependendo de quanto tempo passou do seu ultimo build. Ao invés disso, utilize tags mais específicas.
 
- ![melhores-práticas-7](img/02/melhores-praticas-7.png)
+ ![melhores-práticas-7](resources/02melhores-praticas-7.png)
 
 ```bash
 vim Dockerfile
@@ -563,7 +563,7 @@ docker image build -t dicas:v8 .
 
 Agora temos uma diminuição enorme em nossa imagem pois estamos utilizando uma imagem base bem menor.
 
-![melhores-práticas-dica8](img/02/melhores-praticas-dica8.png)
+![melhores-práticas-dica8](resources/02melhores-praticas-dica8.png)
 
 ### Dica #9: Multi-stage build
 
@@ -615,7 +615,7 @@ COPY     --from=builder /go/src/github.com/alexellis/href-counter/app .
 CMD      ["./app"]
 ``` 
 
-![melhores-práticas-9](img/02/melhores-praticas-9.png)
+![melhores-práticas-9](resources/02melhores-praticas-9.png)
 
 
 ```bash

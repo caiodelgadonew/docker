@@ -223,7 +223,7 @@ Quando falamos de Swarm, precisamos entender dois recursos importantes, os servi
 
 Quando utilizamos os serviços descrevemos o estado desejado, como por exemplo:
 
-![services diagram](img/06/services-diagram.png)
+![services diagram](resources/06services-diagram.png)
 
 Com isto o swarm manager irá criar as tasks e dividi-las entre os nodes disponíveis, de forma a atender, se possível, o estado desejado.
 
@@ -260,7 +260,7 @@ O serviço gobal, é o serviço que vai executar em todos os nós, por isso o no
 
 O diagrama abaixo mostra um serviço com três replicas em amarelo e um serviço global em cinza
 
-![replicated-vs-global](img/06/replicated-vs-global.png)
+![replicated-vs-global](resources/06replicated-vs-global.png)
 
 
 ## Gerenciando Serviços
