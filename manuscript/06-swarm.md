@@ -4,14 +4,14 @@ Docker Swarm é uma ferramenta de orquestração de containers, que possibilita 
 
 ## Conceitos
 
-### **Cluster** 
+### Cluster  
 
 Cluster é um conjunto de computadores que trabalham em grupo de modo a ser visto como um sistema único.
 
 Utilizamos clusters para ganhar mais poder computacional e maior confiabilidade orquestrando um número de máquinas de "baixo custo" para obter um maior poder de processamento.
 
 
-### **Node** 
+### Node  
 
 
 Utilizamos o nome Node, ou nó,  quando nos referimos a qualquer elemento computacional que faz parte de um cluster, seja ele um nó do tipo primário (master) ou um do tipo secundário (follower).
