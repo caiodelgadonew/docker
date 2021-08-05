@@ -13,13 +13,13 @@ O conteúdo é ministrado ao vivo no canal do Youtube
 
 
 ## Capítulos
-[00 - Introdução](00-intro.md)  
-[01 - Fundamentos](01-fundamentos.md)  
-[02 - Imagens](02-imagens.md)  
-[03 - Volumes](03-volumes.md)  
-[04 - Redes](04-redes.md)  
-[05 - Docker-Compose](05-docker-compose.md)  
-[06 - Swarm](06-swarm.md)  
+[00 - Introdução](manuscript/00-intro.md)  
+[01 - Fundamentos](manuscript/01-fundamentos.md)  
+[02 - Imagens](manuscript/02-imagens.md)  
+[03 - Volumes](manuscript/03-volumes.md)  
+[04 - Redes](manuscript/04-redes.md)  
+[05 - Docker-Compose](manuscript/05-docker-compose.md)  
+[06 - Swarm](manuscript/06-swarm.md)  
 
 
 _In Progress_
