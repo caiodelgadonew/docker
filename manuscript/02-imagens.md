@@ -1,10 +1,7 @@
-# Docker Course 
-Autor: Caio Delgado  
-
-## Capítulo 02 - Imagens
+# Capítulo 02 - Imagens
 
 
-### Dockerhub
+## Dockerhub
 
 Estas imagens ficam armazenadas em repositórios locais e/ou remotos, um exemplo de repositório remoto é o DockerHub que é um repositório publico de imagens docker onde podemos escolher e utilizar as imagens para subir nossos containers. 
 
@@ -16,7 +13,7 @@ Serviços Fornecidos pelo **Dockerhub**:
 * Automatização do processo de construção de imagens através de triggers (webhooks)
 * Integração com o Github e Bitbucket
 
-#### Criando uma conta no Dockerhub
+### Criando uma conta no Dockerhub
 
 Acesse o endereço https://hub.docker.com e clique em **Sign Up** para criar uma conta, preencha com os seus dados e clique em **Continue**
 ![Registro](resources/02dockerhub1.png)
@@ -41,7 +38,7 @@ docker logout
 ```
 
 
-### Docker Image
+## Docker Image
 
 Uma imagem Docker é um pacote executável que inclui tudo o que é necessário para executar um aplicativo, incluindo o código, bibliotecas, variáveis de ambientes e arquivos de configuração.
 
@@ -58,7 +55,7 @@ Um ponto interessante é que em um cenário onde temos 1 container com a imagem 
 > O mesmo cenário em máquinas virtuais seria exponencialmente maior, uma vez que precisamos instalar todo o sistema operacional e parametrizar cada máquina individualmente.
 
 
-### Gerenciar Imagens no Docker
+## Gerenciar Imagens no Docker
 
 Liste as imagens e verifique o histórico de comandos utilizados para sua construção
 ```bash
@@ -120,7 +117,7 @@ docker container ls
 _No comando acima, estamos passando através de um subshell o comando **docker container ls -aq** que lista todos os containers por **id**, sendo assim, será feita a remoção de todos os containers_
 
 
-### Dockerfile
+## Dockerfile
 
 O Dockerfile é um arquivo de instruções de como deve ser gerada a imagem Docker, através deste arquivo podemos criar novas imagens para serem utilizadas.
 
@@ -210,7 +207,7 @@ docker image build -t webserver .
 docker image ls
 ```
 
-### Enviando a imagem para o Dockerhub
+## Enviando a imagem para o Dockerhub
 
 Para enviar uma imagem para o dockerhub é necessário que sejam feitos 3 passos:
 
@@ -245,7 +242,7 @@ As imagens enviadas podem ser visualizadas na sua página do dockerhub e todos o
 
 ![Repositório](resources/02dockerhub3.png)
 
-### Melhores práticas com o Dockerfile 
+## Melhores práticas com o Dockerfile 
 
 Quando criamos uma imagem, através do comando `docker image build` , a imagem definida pelo `Dockerfile` deve gerar containers que são tão efêmeros quanto possível, isso quer dizer que o container deve poder ser parado e/ou destruido a qualquer momento, e reconstruido ou substituido com o mínimo de configuração ou atualização.
 
@@ -354,7 +351,7 @@ cd ~/dockerfiles/dicas
 git clone https://github.com/caiodelgadonew/java-wc-app.git app
 ``` 
 
-### Dica #1: A ordem importa para o cache
+#### Dica #1: A ordem importa para o cache
 
 A ordem dos passos de build é importante, se o cache de um primeiro passo é invalidado pela modificação de arquivos ou linhas do Dockerfile, os arquivos subsequentes do build quebrarão. Sempre faça a ordenação dos passos do que sofrerá menos mudanças para o que sofrerá mais mudança.
 
@@ -376,7 +373,7 @@ ENTRYPOINT  ["java", "-jar", "/app/target/app.jar"]
 docker image build -t dicas:v1 .
 ```
 
-### Dica #2:  COPY mais específico para limitar a quebra de cache
+#### Dica #2:  COPY mais específico para limitar a quebra de cache
 
 Só copie o necessário. Se possível evite o `COPY`. Quando copiamos arquivos para nossa imagem, tenha certeza que você está sendo bem específico sob o que quer copiar, qualquer mudança no arquivo copiado quebrará o cache. Copiaremos então apenas a aplicação para a imagem, desta maneira as mudanças nos arquivos não afetarão o cache.
 
@@ -399,7 +396,7 @@ ENTRYPOINT  ["java", "-jar", "/app/app.jar"]
 docker image build -t dicas:v2 .
 ``` 
 
-### Dica #3: Identifique as instruções que podem ser agrupadas
+#### Dica #3: Identifique as instruções que podem ser agrupadas
 
 Cada instrução `RUN` cria uma unidade de cache e uma nova camada de imagem, agrupar todos os comandos `RUN` em uma única instrução pode melhorar o desempenho e diminuir a quantidade de camadas uma vez que eles se tornarão uma unidade única cacheavel.
 
@@ -424,7 +421,7 @@ ENTRYPOINT  ["java", "-jar", "/app/app.jar"]
 docker image build -t dicas:v3 .
 ``` 
 
-### Dica #4: Remova as dependências desnecessárias
+#### Dica #4: Remova as dependências desnecessárias
 
 Remover as dependencias desnecessárias e não instalar pacotes de debug é uma boa prática, como por exemplo trocar o `jdk` (Java Development Kit) pelo `jre` (Java Runtime Environment) que é um pacote relativamente menor e contem apenas o necessário para execução. Você pode instalar as ferramentas de debug posteriormente caso necessite. O instalador de pacotes `apt` possui uma flag `--no-install-recommends` que garante que dependencias que não são necessárias não sejam instaladas. Caso precise, adicione elas explicitamente.
 
@@ -453,7 +450,7 @@ Com a **Dica #4** podemos notar uma diminuição consideravel no tamanho de noss
 
 ![melhores-práticas-dica4](resources/02melhores-praticas-dica4.png)
 
-### Dica #5: Remover o cache do gerenciador de pacotes
+#### Dica #5: Remover o cache do gerenciador de pacotes
 
  O gerenciador de pacotes mantem seu próprio cache, o  apt por exemplo guarda seu cache no diretório `/var/lib/apt/lists` e `/var/cache/apt/`. Uma das maneiras de lidar com este problema é remover o cache na mesma instrução que o pacote foi instalado. Remover este cache em outra instrução não irá diminuir o tamanho da imagem.
 
@@ -483,7 +480,7 @@ Agora com a **Dica #5** nossa imagem ficou relativamente menor.
 
 ![melhores-práticas-dica5](resources/02melhores-praticas-dica5.png)
 
-### Dica #6: Utilize imagens oficiais quando possível
+#### Dica #6: Utilize imagens oficiais quando possível
 
 Imagens oficiais podem ajudar muito e reduzir bastante o tempo preparando a imagem, isto porque os passos de instalação já vem prontos e normalmente com as melhores praticas aplicadas, isto também fará você ganhar tempo caso tenha multiplos projetos, eles compartilham as mesmas camadas e utilizam a mesma imagem base.
 
@@ -505,7 +502,7 @@ ENTRYPOINT  ["java", "-jar", "/app/app.jar"]
 docker image build -t dicas:v6 .
 ``` 
 
-### Dica #7:  Utilize Tags mais específicas
+#### Dica #7:  Utilize Tags mais específicas
 
 Nunca utilize a tag `latest`. Ela pode receber alguma atualização e em um momento de update sua aplicação pode quebrar, dependendo de quanto tempo passou do seu ultimo build. Ao invés disso, utilize tags mais específicas.
 
@@ -526,7 +523,7 @@ ENTRYPOINT  ["java", "-jar", "/app/app.jar"]
 docker image build -t dicas:v7 .
 ``` 
 
-### Dica #8: Procure por flavors mínimos
+#### Dica #8: Procure por flavors mínimos
 
 Existem diversos flavors linux que fazem com que nossa imagem se torne cada vez menor, um bom exemplo são as imagens `slim` e `alpine` as quais são as menores encontradas. A imagem `slim` é baseada no Debian, enquanto a `alpine` é baseada em uma distribuição linux muito menor chamada Alpine. A diferença básica entre elas é que o debian utiliza a biblioteca `GNU libc` enquanto o alpine utiliza `musl lbc`, que apesar de muito menor, pode ter problemas de compatibilidade.
 
@@ -565,7 +562,7 @@ Agora temos uma diminuição enorme em nossa imagem pois estamos utilizando uma 
 
 ![melhores-práticas-dica8](resources/02melhores-praticas-dica8.png)
 
-### Dica #9: Multi-stage build
+#### Dica #9: Multi-stage build
 
 Multi-stage build é um recurso muito poderoso que apareceu a partir do docker 17.05. Multistage builds são uteis para quem quer otimizar Dockerfiles enquanto mantém eles fáceis de ler e manter.
 

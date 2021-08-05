@@ -4,14 +4,8 @@ Um dos motivos pelos quais os contêineres e serviços do Docker são tão poder
 
 Recursos de Network utilizados pelo docker:
 
-```mermaid
-graph TD
-    subgraph Networking
-        A[veth]
-        B[bridge]
-        C[iptables]
-    end
-```
+![Networking](resources/04networking.png)
+
 
 * **veth**: Virtual Ethernet
 * **bridge**: Interface Bridge
