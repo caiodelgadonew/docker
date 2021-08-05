@@ -2,7 +2,15 @@
 Autor: Caio Delgado
 _Curso 100% Gratuito_ 
 
-Redes Sociais  
+**Quer comprar este livro?**  
+
+[![Leanpub](https://img.shields.io/website?down_color=blue&down_message=dockerdca&label=leanpub&logo=leanpub&style=for-the-badge&up_color=blue&up_message=dockerdca&url=https%3A%2F%2Fleanpub.com%2Fdockerdca%2F)](https://leanpub.com/dockerdca/)
+
+
+No leanpub você consegue adquirir o livro gratuitamente ou escolher o valor que gostaria de pagar por ele. 
+
+
+**Redes Sociais**  
 
 [![Linktr.ee](https://img.shields.io/website?down_message=caiodelgadonew&label=LINKTR.EE&logo=linktree&style=for-the-badge&up_message=caiodelgadonew&url=https%3A%2F%2Flinktr.ee%2Fcaiodelgadonew)](https://linktr.ee/caiodelgadonew)
 
