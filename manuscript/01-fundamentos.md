@@ -11,7 +11,7 @@ Com a utilização do Docker podemos gerenciar toda a infraestutura de uma aplic
 
 O Docker trabalha com uma virtualização a nível do sistema operacional, onde o mesmo utiliza de recursos como o kernel do sistema hospedeiro para executar seus containers. Diferente do modelo tradicional de Máquinas Virtuais, o Docker não necessita da instalação de um sistema operacional por completo, e sim apenas dos arquivos necessários para a aplicação ser executada.
 
-![Weaveworks - VM x Containers](img/01/vmvsdocker.png)
+![Weaveworks - VM x Containers](resources/01vmvsdocker.png)
 
 ### Por que usar Docker
 
@@ -29,7 +29,7 @@ Um container consiste de um ambiente completo (uma aplicação e todas suas depe
 
 Podemos dizer também que um container é a unidade mínima computacional do Docker, ou seja, o menor recurso que o Docker pode fornecer.
 
-![Container](img/01/container.png)
+![Container](resources/01container.png)
 
 ### Versões
 
@@ -355,7 +355,7 @@ Ao executar o container com a imagem `hello-world` o Docker fez os seguintes pas
 3. O `Docker Daemon` criou um novo container, através da imagem que rodou o executável que produz o texto que vimos no terminal.
 4. O `Docker Daemon` enviou o texto diretamente para o `Docker Client` que enviou para nosso terminal.
 
-![Componentes](img/01/componentes.png)
+![Componentes](resources/01componentes.png)
 
 
 #### Docker Client
