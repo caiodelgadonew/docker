@@ -1,17 +1,17 @@
-# Docker Swarm
+# Capítulo 06 - Docker Swarm
 
 Docker Swarm é uma ferramenta de orquestração de containers, que possibilita o usuário a gerenciar multiplos containers distribuidos em diversas máquinas hosts. Habilitando ferramentas para dimensionamento, rede, proteção e manutenção dos containers.
 
 ## Conceitos
 
-**Cluster** 
+### **Cluster** 
 
 Cluster é um conjunto de computadores que trabalham em grupo de modo a ser visto como um sistema único.
 
 Utilizamos clusters para ganhar mais poder computacional e maior confiabilidade orquestrando um número de máquinas de "baixo custo" para obter um maior poder de processamento.
 
 
-**Node** 
+### **Node** 
 
 
 Utilizamos o nome Node, ou nó,  quando nos referimos a qualquer elemento computacional que faz parte de um cluster, seja ele um nó do tipo primário (master) ou um do tipo secundário (follower).
@@ -136,7 +136,7 @@ $ docker swarm join-token manager
 $ docker swarm join-token worker
 ```
 
-## Adicionando nós ao cluster.
+### Adicionando nós ao cluster.
 
 
 Na máquina master, copie o token de `worker`
@@ -179,7 +179,7 @@ Podemos verificar também que uma rede com o driver `overlay` foi criada para co
 $ docker network ls
 ```
 
-## Promovendo um node a Manager ou rebaixando a worker
+### Promovendo um node a Manager ou rebaixando a worker
 
 Podemos promover um node a manager ou rebaixa-lo através do comando `docker node promote` e `docker node demote`
 
@@ -764,7 +764,7 @@ Senha: caiodelgadonew@youtube
 email: caiodelgadonew@docker-dca.example
 ```
 
-### Gerenciando Limites do container
+## Gerenciando Limites do container
 
 Podemos também gerenciar um limite/reserva de recursos para o container através do parâmetro `resources` no compose.
 
@@ -866,7 +866,7 @@ Remova a stack
 $ docker stack rm wordpress-stack
 ``` 
 
-### Traefik com Stack (Extra)
+## Traefik com Stack (Extra)
 
 Para finalizar, vamos fazer um deploy de uma stack do jogo "dockersupermario" com o traefik fazendo proxy reverso.
 

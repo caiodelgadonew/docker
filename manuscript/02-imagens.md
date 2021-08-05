@@ -1,6 +1,5 @@
 # Capítulo 02 - Imagens
 
-
 ## Dockerhub
 
 Estas imagens ficam armazenadas em repositórios locais e/ou remotos, um exemplo de repositório remoto é o DockerHub que é um repositório publico de imagens docker onde podemos escolher e utilizar as imagens para subir nossos containers. 

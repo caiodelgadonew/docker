@@ -1,4 +1,4 @@
-### Storage Drivers
+# Capítulo 03 - Storage Drivers
 
 Storage Drivers possibilitam a criação de dados em uma camada gravável do container. Os arquivos não serão persistidos após o container ser deletado, ambas velocidades de leitura e escrita tem performance mais lentas que um sistema de arquivos.
 
@@ -27,7 +27,7 @@ A alteração do storage driver padrão deve ser feita através do arquivo de pa
 }
 ```
 
-### Docker Volumes
+## Docker Volumes
 
 Volume é um diretório especialmente designado, seja em um ou mais containers que compartilham o sistema de arquivos UnionFS
 
@@ -51,7 +51,7 @@ Existem algumas vantagens ao se utilizar volumes do Docker ao invés de **bind m
 * Drivers de Volumes podem habilitar o armazenamento em hosts remotos ou provedores de cloud, criptografar o conteúdo ou adicionar novas funcionalidades;
 * Novos volumes podem ter seu conteúdo pré-populados por um container.
 
-### Gerenciar Volumes
+## Gerenciar Volumes
 
 Para utilizar volumes no docker utilizamos a opção **-v** ou **--volume** para indicar qual volume deve ser montado no container.
 
@@ -136,7 +136,7 @@ docker container inspect servidor --format '{{json .Mounts }}' | jq
 docker container inspect servidor2 -f '{{json .Mounts }}' | jq
 ```
 
-### Selinux Labels
+## Selinux Labels
 
 O mode `:z` indica que o conteúdo do bind mount é compartilhado entre multiplos containers
 
@@ -152,7 +152,7 @@ _O comando **docker volume ls -q** lista os volumes por **id**_
 > **ATENÇÃO:** a remoção do volume através do comando **_docker volume rm_** faz com que o volume seja excluído, não sendo possível a recuperação dos dados.
 
 
-### tmpfs mounts
+## tmpfs mounts
 
 Volume e bind mounts permitem que compartilhemos arquivos entre a máquina hospedeira e o container, de maneira a persistir os dados após o container ser parado.
 
@@ -292,13 +292,13 @@ Para gerenciamento de plugins, utilizamos o comando `docker plugin`
 > Para uma lista completa dos plugins veja [Docker Engine Plugins](https://docs.docker.com/engine/extend/legacy_plugins/)
 
 
-## Volume Plugins
+### Volume Plugins
 
 > Lista completa com definições [Volume Plugins](https://docs.docker.com/engine/extend/legacy_plugins/#volume-plugins)
 
 Os plugins de volumes habilitam com que os volumes docker persistam através de diversos docker hosts.
 
-### Instalando um plugin
+#### Instalando um plugin
 
 Iremos instalar um plugin chamado `sshfs` que trata-se de um plugin para sistema de arquivos baseado em SSH.
 
@@ -343,7 +343,7 @@ $ docker volume inspect sshvolume | jq
 $ docker container run --rm -v sshvolume:/data alpine ls /data
 ```
 
-### Volume NFS
+#### Volume NFS
 
 
 Na máquina master vamos instalar um servidor NFS e mapear um diretório

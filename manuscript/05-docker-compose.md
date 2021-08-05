@@ -1,12 +1,13 @@
-## Docker Compose
 
-### O que é o Compose
+# Capítulo 05 - Docker Compose
+
+## O que é o Compose
 
 Compose é uma ferramenta para definir e executar aplicações multi-containers em Docker. Com m simples comando é possível inicar todos os serviços através de sua configuração.
 
 O Compose funciona em todos os ambientes: produção, homologação, desenvolvimento, teste e fluxos de integração contínua.
 
-### Etapas de um Compose
+## Etapas de um Compose
 
 Utilizar o Compose é um processo de três etapas:
 
@@ -15,7 +16,7 @@ Utilizar o Compose é um processo de três etapas:
 3. Executar o comando docker-compose up
 
 
-### docker-compose.yml
+## docker-compose.yml
 
 O arquivo **docker-compose.yml** define a estrutura e como serão executados os containers.
 
@@ -51,7 +52,7 @@ services:
 
 Obrigatóriamente o docker-compose.yml deve começar indicando qual a versão do compose a ser utilizada, em seguida podemos definir os serviços, volumes e redes não importando a ordem. Cada container a ser executado é uma nova seção do grupo **services**.
 
-### Instalando o Docker Compose
+## Instalando o Docker Compose
 
 Para instalar o Docker Compose basta executar os comandos da [documentação](https://docs.docker.com/compose/install/)
 ```bash
@@ -60,7 +61,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 ```
 
-### Criando Composes
+## Criando Composes
 
 Crie um diretório para armazenarmos nosso compose
 ```bash

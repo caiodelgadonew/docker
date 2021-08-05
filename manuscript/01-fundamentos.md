@@ -164,6 +164,7 @@ Adicione também as seguintes entradas ao arquivo `hosts` da sua máquina.
 ## Namespaces e Cgroups
 
 O Docker utiliza de recursos do linux como por exemplo namespaces, cgroups dentre vários outros que iremos falar futuramente para isolar os containers que serão executados.
+
 ### Namespaces 
 
 ![Namespaces](resources/01namespaces.png)
