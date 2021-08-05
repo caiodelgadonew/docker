@@ -453,7 +453,7 @@ Com a **Dica #4** podemos notar uma diminuição consideravel no tamanho de noss
 
  O gerenciador de pacotes mantem seu próprio cache, o  apt por exemplo guarda seu cache no diretório `/var/lib/apt/lists` e `/var/cache/apt/`. Uma das maneiras de lidar com este problema é remover o cache na mesma instrução que o pacote foi instalado. Remover este cache em outra instrução não irá diminuir o tamanho da imagem.
 
- ![melhores-práticas-5](resources/02melhores-praticas-5.png)
+![melhores-práticas-5](resources/02melhores-praticas-5.png)
 
 ```bash
 vim Dockerfile
@@ -484,7 +484,7 @@ Agora com a **Dica #5** nossa imagem ficou relativamente menor.
 Imagens oficiais podem ajudar muito e reduzir bastante o tempo preparando a imagem, isto porque os passos de instalação já vem prontos e normalmente com as melhores praticas aplicadas, isto também fará você ganhar tempo caso tenha multiplos projetos, eles compartilham as mesmas camadas e utilizam a mesma imagem base.
 
 
- ![melhores-práticas-6](resources/02melhores-praticas-6.png)
+![melhores-práticas-6](resources/02melhores-praticas-6.png)
 
 ```bash
 vim Dockerfile
@@ -505,7 +505,7 @@ docker image build -t dicas:v6 .
 
 Nunca utilize a tag `latest`. Ela pode receber alguma atualização e em um momento de update sua aplicação pode quebrar, dependendo de quanto tempo passou do seu ultimo build. Ao invés disso, utilize tags mais específicas.
 
- ![melhores-práticas-7](resources/02melhores-praticas-7.png)
+![melhores-práticas-7](resources/02melhores-praticas-7.png)
 
 ```bash
 vim Dockerfile
