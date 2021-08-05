@@ -1,4 +1,4 @@
-# Networking
+# Capítulo 04 - Networking
 
 Um dos motivos pelos quais os contêineres e serviços do Docker são tão poderosos é que você pode conecta-los entre si ou a outros serviços. Para isso, utilizamos as redes docker.
 
