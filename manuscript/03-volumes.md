@@ -2,17 +2,8 @@
 
 Storage Drivers possibilitam a criação de dados em uma camada gravável do container. Os arquivos não serão persistidos após o container ser deletado, ambas velocidades de leitura e escrita tem performance mais lentas que um sistema de arquivos.
 
-```mermaid
-graph TD
-    subgraph Storage
-        A[Device Mapper]
-        B[btrfs]
-        C[aufs]
-        D[OverlayFS]
-        E[ZFS]
-        G[VFS]
-    end
-```
+![Storage Drivers](resources/03storagedrivers.png)
+
 
 * **Device Mapper**: Framework de gerenciamento de volumes linux
 * **btrfs**: CoW (copy-on-write) filesystem, pode ser utilizado para combinar diversos blocos físicos em um único sistema btrfs

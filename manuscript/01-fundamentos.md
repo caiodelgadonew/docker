@@ -1,9 +1,6 @@
-# Docker Course 
-Autor: Caio Delgado  
+# Capítulo 01 - Fundamentos
 
-## Capítulo 01 - Fundamentos
-
-### O que é o Docker
+## O que é o Docker
 
 Docker é uma plataforma Open Source escrita em Go  (Linguagem de programação em alta performance desenvolvida pela Google)  que ajuda a criação e a administração de ambientes isolados.
 
@@ -13,7 +10,7 @@ O Docker trabalha com uma virtualização a nível do sistema operacional, onde 
 
 ![Weaveworks - VM x Containers](resources/01vmvsdocker.png)
 
-### Por que usar Docker
+## Por que usar Docker
 
 Em 2013, Docker introduziu o que se tornou o padrão da industria para containers, trouxe uma maneira simples, rápida e eficiente de executar aplicações sem a complexidade de uma máquina virtual.
 
@@ -21,7 +18,7 @@ Docker garante um ecossistema consistente, fazendo com que o desenvolvedor possa
 
 Existem diversas engines e runtimes de containers e até é possível utilizar containers sem Docker, mas atualmente o Docker é a engine/runtime de container mais utilizada no mercado, o que torna o conhecimento do mesmo um **"Must have"** e dificilmente encontramos vagas na área de tecnologia que não pedem um conhecimento, mesmo que básico, de containers ou Docker.
 
-### O que é um container
+## O que é um container
 
 Um container consiste de um ambiente completo (uma aplicação e todas suas dependências, bibliotecas, binários, arquivos de configuração) em um unico pacote. Ao containerizar uma plataforma de aplicação e suas dependências as diferenças em distribuições de sistemas operacionais e camadas inferiores da infraestrutura são abstraídas.
 
@@ -31,7 +28,7 @@ Podemos dizer também que um container é a unidade mínima computacional do Doc
 
 ![Container](resources/01container.png)
 
-### Versões
+## Versões
 
 O Docker possui basicamente duas versões, a versão da comunidade (Community Edition) e a versão empresarial (Enterprise Edition).
 
@@ -56,13 +53,13 @@ A recomendação para ambientes de produção do Docker EE é:
 * 25 a 100GB de espaço livre em disco.
 
 
-### Instalação
+## Instalação
 
 Iremos instalar o Docker em máquinas virtuais para que possamos facilitar o estudo, para isto utilizaremos uma solução chamada **Vagrant** somado ao **Virtualbox**, você pode utilizar a solução de virtualização que preferir, porém eu indico que você siga exatamente como listado no curso porque caso você precise de suporte eu possa lhe ajudar.
 
 > Lembre-se de habilitar a virtualização Intel VT-x ou AMD SVM na UEFI/BIOS.
 
-#### Instalando o Vagrant e Virtualbox 
+### Instalando o Vagrant e Virtualbox 
 
 Para instalar o Virtualbox siga os passos:
 
@@ -82,11 +79,14 @@ Para Instalar o vagrant siga os passos:
 2.3. Para MacOS, clique sob o instalador e avance até o final da instalação.
 3. Após a instalação abra um terminal ou um prompt de comando e execute o comando `vagrant --version` para verificar se o pacote foi instalado com sucesso.
 
-##### Preparando o Ambiente
+### Preparando o Ambiente
 
 Após instalar o **Vagrant** e o **Virtualbox**, podemos criar um diretório com um arquivo Vagrantfile.
 
 > O Vagrantfile é o arquivo do **Vagrant** responsável por criar nossa infraestrutura.
+
+Caso queira utilizar os arquivos mais atualizados, basta clonar o repositório: https://github.com/caiodelgadonew/docker-dca
+
 
 ```bash
 $ mkdir ~/docker 
@@ -101,10 +101,10 @@ Adicione o conteúdo ao arquivo Vagrantfile
 # vi: set ft=ruby  :
 
 machines = {
-  "master"   => {"memory" => "2048", "cpu" => "2", "ip" => "10", "image" => "ubuntu/bionic64"},
-  "node01"   => {"memory" => "1024", "cpu" => "2", "ip" => "21", "image" => "ubuntu/bionic64"},
-  "node02"   => {"memory" => "1024", "cpu" => "2", "ip" => "22", "image" => "centos/7"},
-  "registry" => {"memory" => "1024", "cpu" => "2", "ip" => "50", "image" => "centos/7"}
+  "master"   => {"memory" => "2048", "cpu" => "2", "ip" => "100", "image" => "ubuntu/bionic64"},
+  "node01"   => {"memory" => "1024", "cpu" => "2", "ip" => "110", "image" => "ubuntu/bionic64"},
+  "node02"   => {"memory" => "1024", "cpu" => "2", "ip" => "120", "image" => "centos/7"},
+  "registry" => {"memory" => "2048", "cpu" => "2", "ip" => "200", "image" => "ubuntu/bionic64"}
 }
 
 Vagrant.configure("2") do |config|
@@ -112,24 +112,25 @@ Vagrant.configure("2") do |config|
   machines.each do |name, conf|
     config.vm.define "#{name}" do |machine|
       machine.vm.box = "#{conf["image"]}"
-      machine.vm.hostname = "#{name}.caiodelgado.dev"
-      machine.vm.network "private_network", ip: "192.168.200.#{conf["ip"]}"
+      machine.vm.hostname = "#{name}.docker-dca.example"
+      machine.vm.network "private_network", ip: "10.20.20.#{conf["ip"]}"
       machine.vm.provider "virtualbox" do |vb|
         vb.name = "#{name}"
         vb.memory = conf["memory"]
         vb.cpus = conf["cpu"]
         vb.customize ["modifyvm", :id, "--groups", "/Docker-DCA"]
       end
+      machine.vm.provision "shell", inline: "hostnamectl set-hostname #{name}.docker-dca.example"
+      config.vm.provision "shell", inline: <<-SHELL
+        HOSTS=$(head -n7 /etc/hosts)
+        echo -e "$HOSTS" > /etc/hosts
+        echo '192.168.200.10  master.docker.example' >> /etc/hosts
+        echo '192.168.200.21  node01.docker.example' >> /etc/hosts
+        echo '192.168.200.22  node02.docker.example' >> /etc/hosts
+        echo '192.168.200.50  registry.docker.example' >> /etc/hosts
+        SHELL
     end
   end
-  config.vm.provision "shell", inline: <<-SHELL
-    HOSTS=$(head -n7 /etc/hosts)
-    echo -e "$HOSTS" > /etc/hosts
-    echo '192.168.200.10  master.docker.example' >> /etc/hosts
-    echo '192.168.200.21  node01.docker.example' >> /etc/hosts
-    echo '192.168.200.22  node02.docker.example' >> /etc/hosts
-    echo '192.168.200.50  registry.docker.example' >> /etc/hosts
-    SHELL
 end
 ```
 
@@ -160,21 +161,12 @@ Adicione também as seguintes entradas ao arquivo `hosts` da sua máquina.
 > Em máquinas **Linux** e **MacOS** o arquivo fica localizado em `/etc/hosts`
 > Em máquinas **Windows** o arquivo fica localizado em `C:\Windows\System32\drivers\etc\hosts`
 
-#### Namespaces e Cgroups
+## Namespaces e Cgroups
 
 O Docker utiliza de recursos do linux como por exemplo namespaces, cgroups dentre vários outros que iremos falar futuramente para isolar os containers que serão executados.
-#### Namespaces 
+### Namespaces 
 
-```mermaid
-graph TD
-    subgraph Namespaces
-        A[PID]
-        B[MNT]
-        C[IPC]
-        D[UTS]
-        D[NET]
-    end
-```
+![Namespaces](resources/01namespaces.png)
 * **PID**: Process ID
 * **MNT**: Mount Points
 * **IPC**: Comunicação Inter Processos
@@ -188,17 +180,10 @@ Com o isolamento, os sistemas em execução nos containers tem suas próprias á
 
 
 
-#### cgroups
+### cgroups
 
-```mermaid
-graph TD
-    subgraph Cgroups
-        A[cpu]
-        B[cpuset]
-        C[memory]
-        D[device]
-    end
-```
+![cgroups](resources/01cgroups.png)
+
 
 * **cpu**: Divisão de CPU por containers.
 * **cpuset**: CPU Masks, para limitar threads
@@ -207,7 +192,7 @@ graph TD
 
 Os containers trabalham com cgroups (Control Groups) que fazem isolamento dos recursos físicos da maquina. Em geral os cgrops podem ser utilizados para controlar estes recursos tais como limites e reserva de CPU, limites e reserva de memória, dispositivos, etc…
 
-#### Instalação do Docker 
+## Instalação do Docker 
 
 Existem duas maneiras de instalar o Docker
 * Script de Conveniência
@@ -215,7 +200,7 @@ Existem duas maneiras de instalar o Docker
 
 Iremos efetuar a instalação da maneira tradicional nas máquinas `master` e `node02` e com o script de conveniência nas máquinas `node01` e `registry`.
 
-#### Instalando Docker no Ubuntu
+### Instalando Docker no Ubuntu
 
 Primeiramente vamos acessar a máquina `master`
 
@@ -262,7 +247,7 @@ $ exit
 $ vagrant ssh master
 ```
 
-#### Instalando Docker no CentOS
+### Instalando Docker no CentOS
 
 Abra um novo terminal e acesse a máquina `node02`
 
@@ -306,7 +291,7 @@ $ exit
 $ vagrant ssh node02
 ```
 
-#### Instalando Docker através do script de Conveniência.
+### Instalando Docker através do script de Conveniência.
 
 Os passos a seguir devem ser executados nas máquinas `node01` e `registry`, não esqueça de abrir um terminal novo para cada máquina e executar o comando `vagrant ssh <host>`
 
@@ -337,7 +322,7 @@ Vamos também instalar o recurso de `Bash Completion` através do comando:
 $ sudo curl https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash -o /etc/bash_completion.d/docker-machine
 ```
 
-#### Teste de Execução
+### Teste de Execução
 
 Para garantirmos que o docker foi instalado corretamente e esta funcional, podemos rodar nosso primeiro container e verificar o retorno na tela.
 
@@ -345,7 +330,7 @@ Para garantirmos que o docker foi instalado corretamente e esta funcional, podem
 $ docker container run --rm -it hello-world
 ```
 
-### Componentes
+## Componentes
 
 Agora que rodamos nosso primeiro container, precisamos entender alguns componentes básicos da sua arquitetura e seu funcionamento.
 
@@ -358,21 +343,21 @@ Ao executar o container com a imagem `hello-world` o Docker fez os seguintes pas
 ![Componentes](resources/01componentes.png)
 
 
-#### Docker Client
+### Docker Client
 
 O Docker Client é o pacote `docker-ce-cli` ele fornece os comandos do lado do cliente, como por exemplo o comando `docker container run`, que irá interagir com o Docker Daemon
 
 
-#### Docker Daemon 
+### Docker Daemon 
 
 O Docker Daemon é o pacote `docker-ce` ele é o servidor propriamente dito, que receberá os comandos através do Docker Client e fornecerá os recursos de virtualização a nivel de sistema operacional.
 
 
-#### Docker Registry
+### Docker Registry
 
 O Docker Registry é o local de armazenamento de imagens docker, normalmente o Docker hub, de onde o Docker Daemon receberá as imagens a serem executadas no processo de criação de um container.
 
-#### Comandos Essenciais
+## Comandos Essenciais
 
 Iremos agora aprender alguns comandos essenciais do Docker.
 
@@ -397,7 +382,7 @@ Antigamente o comando utilizado para listar containers era o comando `docker ps`
 
 Existem diversos outros comandos que iremos ver ao longo do curso.
 
-#### Executando comandos
+### Executando comandos
 
 Antes de executar os comandos do docker, vamos conectar na máquina node01.
 
