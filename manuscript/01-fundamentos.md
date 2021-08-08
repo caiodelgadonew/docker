@@ -466,7 +466,7 @@ docker container ls
 ```
 _Note que agora o container ainda está em execução._
 
-Para verificar os logs do container utilizamos o comandoo **docker container logs**
+Para verificar os logs do container utilizamos o comando **docker container logs**
 ```bash
 docker container logs debian1
 ```
