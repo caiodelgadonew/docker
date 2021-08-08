@@ -213,6 +213,161 @@ $ docker node ls
 
 > Trabalharemos com apenas um manager pois como falamos na etapa do raft consensus, ter dois managers é pior do que ter apenas um.
 
+## Private Registry
+
+![Private Registry](resources/06registry.png)
+
+Quando trabalhamos com clusters como o docker swarm, precisamos configurar um private registry, porque fazer isto? temos alguns motivos:
+
+* Docker Hub Rate Limiting
+* Segurança 
+* Velocidade 
+
+**Docker Hub Rate Limiting**
+
+Quando utilizamos o serviço do dockerhub, temos um limite de requisição de 100 imagens de containers a cada seis horas por utilização anônima que podemos aumentar para 200 caso utilizemos uma conta gratuita.
+
+**Segurança** 
+
+Muitas das vezes não queremos que nossas imagens sejam enviadas para um registry publico por conter algum tipo de informação/tecnologia sensível.
+
+**Velocidade** 
+
+Quando temos um ambiente complexo, com diversos nodes fazendo o download de imagens diariamente, não queremos depender da nossa banda de internet. Um registry privado ganha velocidade neste quesito, uma vez que ele se comunica com o dockerhub
+
+### Preparando nosso Registry
+
+Primeiramente precisamos conectar via SSH e adicionar a máquina registry ao nosso cluster.
+Caso precise, execute `docker swarm join-token worker` na máquina manager para copiar o comando de join
+
+
+```bash
+$ vagrant ssh registry
+$ docker swarm join --token 
+SWMTKN-1-0cfecsrgcdvuncxosbwpgu8yg674b4lur8643tizkeilnplhax-4wow83y7dw51vvy5d281347z1 10.20.20.100:2377
+```
+
+O próximo passo é adicionar o bloco de insecure registry a todas máquinas do nosso cluster.
+
+```json
+{
+  "insecure-registries" : ["registry.docker-dca.example:5000"] 
+}
+```
+
+Podemos fazer isto executando o seguinte comando em todos os nodes
+```bash
+$ echo '{ "insecure-registries" : ["registry.docker-dca.example:5000"] }' | sudo tee /etc/docker/daemon.json ; sudo systemctl restart docker
+```
+
+> Em ambientes de produção, configuramos nosso registry como seguro e adicionamos a ele um certificado SSL, mais informações podem ser encontradas na [Documentação Oficial](https://docs.docker.com/registry/deploying/)
+
+### Deploy do Registry
+
+Agora que ja configuramos os nodes podemos efetuar o deploy do nosso registry.
+
+Execute o comando na máquina registry
+
+```bash
+$ docker container run -dit --name registry -p 5000:5000 registry:2
+```
+> Utilizamos a tag `registry:2` porque utilizamos o deploy versão `v2` do registry, que é a mais atual.
+
+### Enviando Imagens
+
+Para enviar imagens para nosso registry precisamos criar uma tag da imagem e efetuar o push.
+Podemos fazer isto a partir de qualquer máquina que tenha acesso a nosso registry.
+```bash
+$ docker image pull alpine
+$ docker image tag alpine registry.docker-dca.example:5000/alpine
+$ docker image push registry.docker-dca.example:5000/alpine
+```
+
+### Listando Imagens
+
+O Docker Registry por padrão não possui nenhuma interface para visualizar as imagens, mas podemos através de um simples `curl` verificar os repositórios existentes.
+
+```bash
+$ curl http://registry.docker-dca.example:5000/v2/_catalog
+``` 
+
+Teremos como resposta um json.
+```json
+{
+  "repositories": ["alpine"]
+}
+```
+
+Podemos tambem listar as tags acessando o endpoint `v2/<image_name>/tags/list` 
+
+```bash
+$ curl http://registry.docker-dca.example:5000/v2/alpine/tags/list
+```
+
+```json
+{
+  "name":"alpine","tags":["latest"]
+}
+```
+
+### Adicionando as imagens que iremos utilizar nos laboratórios
+
+Agora que ja aprendemos como enviar images para nosso private registry, iremos fazer o download das imagens que utilizaremos nos próximos laboratórios
+
+* `nginx`
+* `mysql:5.7`
+* `wordpress`
+* `caiodelgadonew/docker-supermario`
+* `traefik:v2.4`
+
+Para facilitar nosso processo, iremos criar um pequeno script em bash para automatizar este processo.
+
+```bash
+$ vim images.sh
+```
+```shell
+for image in 'nginx' 'mysql:5.7' 'wordpress' 'caiodelgadonew/docker-supermario' 'traefik:v2.4'
+do
+docker image pull $image
+docker tag $image registry.docker-dca.example:5000/$image
+docker push registry.docker-dca.example:5000/$image
+done
+```
+
+Vamos executar o script
+```bash
+$ chmod +x images.sh
+$ ./images.sh
+``` 
+
+Após a finalização do script podemos visualizar nosso catalogo e verificar as imagens disponíveis
+```bash
+$ curl http://registry.docker-dca.example:5000/v2/_catalog
+```
+> Caso você tenha o `jq` instalado em sua máquina podemos visualizar de maneira mais agradável
+
+```bash
+$ curl http://registry.docker-dca.example:5000/v2/_catalog | jq
+```
+
+```json
+{
+  "repositories": [
+    "alpine",
+    "caiodelgadonew/docker-supermario",
+    "mysql",
+    "nginx",
+    "traefik",
+    "wordpress"
+  ]
+}
+```
+
+Podemos verificar as tags dos repositórios que não utilizaremos a tag latest como por exemplo o `mysql` e o `traefik`
+```bash
+$ curl http://registry.docker-dca.example:5000/v2/mysql/tags/list
+$ curl http://registry.docker-dca.example:5000/v2/traefik/tags/list
+```
 
 ## Services e Tasks
 
@@ -272,7 +427,7 @@ $ docker service --help
 
 Vamos criar um serviço para executar o nginx
 ```bash
-$ docker service create --name webserver nginx
+$ docker service create --name webserver registry.docker-dca.example:5000/nginx
 ```
 
 Podemos listar os serviços através do subcomando `ls` e listar as tasks através do comando `ps`
@@ -329,7 +484,7 @@ $ docker service rm webserver
 
 Assim como fazemos com containers, podemos alterar o comando que o container deve executar, basta adicionar o comando ao final.
 ```bash
-$ docker service create --name pingtest alpine ping google.com
+$ docker service create --name pingtest registry.docker-dca.example:5000/alpine ping google.com
 ```
 Também podemos verificar os logs do serviço. 
 ```bash
@@ -359,6 +514,49 @@ $ docker node ps master.docker-dca.example
 $ docker node ps node01.docker-dca.example
 $ docker node ps node02.docker-dca.example
 ```
+
+## Disponibilidade dos Nodes
+
+Quando precisamos efetuar algum tipo de manutenção em algum node do cluster, precisamos garantir que a manutenção seja feita de maneira correta.
+
+Para este tipo de situação precisamos fazer o processo de `drain` ou drenagem dos nós.
+
+Isto é possível da seguinte maneira:
+
+Primeiramente vamos aumentar o numero de replicas de nosso `pingtest` para 7
+
+```bash
+$ docker service update --replicas 7 pingtest
+$ docker service ps pingtest
+```
+
+Podemos ver que nosso serviço está sendo executado em diversos nodes. Vamos colocar nosso `node01` em estado de drenagem através do comando:
+
+```bash
+$ docker node update node01.docker-dca.example --availability drain 
+```
+
+Podemos verificar agora como nosso serviço e nosso node estão trabalhando
+```bash
+$ docker service ps pingtest
+$ docker node ls 
+$ docker node inspect --pretty node01.docker-dca.example
+```
+
+Vemos que nosso node esta em estado de `Drain` e as tasks foram direcionadas para outros nodes.
+
+Para voltar nosso node para um estado de disponível podemos mudar sua `avaliability` para `active`
+
+```bash
+$ docker node update node01.docker-dca.example --availability active
+```
+
+Note que as tasks não serão redistribuidas uma vez que estão sendo executadas com sucesso.
+```bash
+$ docker service ps pingtest
+```
+
+> Caso novas tasks sejam requistadas, o nosso node agora é um candidato para recebe-las
 
 Remova o serviço
 ```bash
@@ -393,7 +591,7 @@ $ docker service create --name mysql_database \
 --publish 3306:3306/tcp \
 --secret senha_db \
 -e MYSQL_ROOT_PASSWORD_FILE=/run/secrets/senha_db \
-mysql:5.7
+registry.docker-dca.example:5000/mysql:5.7
 ```
 
 Vamos instalar o client do mariadb, verificar em qual servidor está sendo executada a task com o container e vamos conectar passando a senha que configuramos no arquivo.
@@ -420,7 +618,7 @@ Vamos criar agora uma rede overlay para suportar um serviço do nginx
 ```bash
 $ docker network create -d overlay dca-overlay
 $ docker network inspect dca-overlay
-$ docker service create --name webserver --publish target=80,published=80 --network dca-overlay nginx
+$ docker service create --name webserver --publish target=80,published=80 --network dca-overlay registry.docker-dca.example:5000/nginx
 $ docker node ps
 ``` 
 
@@ -478,7 +676,7 @@ $ docker service create --name webserver \
 --publish 80:80 \
 --network dca-overlay \
 --mount source=volume_nfs,target=/usr/share/nginx/html/ \
-nginx
+registry.docker-dca.example:5000/nginx
 
 $ docker service ps webserver
 ```
@@ -524,7 +722,7 @@ version: '3.9'
 
 services:
   webserver:
-    image: nginx
+    image: registry.docker-dca.example:5000/nginx
     hostname: webserver
     ports:
       - 80:80
@@ -562,7 +760,7 @@ version: '3.9'
 
 services:
   webserver:
-    image: nginx
+    image: registry.docker-dca.example:5000/nginx
     hostname: webserver
     ports:
       - 80:80
@@ -591,7 +789,7 @@ version: '3.9'
 
 services:
   webserver:
-    image: nginx
+    image: registry.docker-dca.example:5000/nginx
     hostname: webserver
     ports:
       - 80:80
@@ -623,7 +821,7 @@ version: '3.9'
 
 services:
   webserver:
-    image: nginx
+    image: registry.docker-dca.example:5000/nginx
     hostname: webserver
     deploy:
       mode: replicated
@@ -657,7 +855,7 @@ version: '3.9'
 
 services:
   webserver:
-    image: nginx
+    image: registry.docker-dca.example:5000/nginx
     hostname: webserver
     deploy:
       mode: replicated
@@ -702,7 +900,7 @@ networks:
 
 services:
   wordpress:
-    image: wordpress
+    image: registry.docker-dca.example:5000/wordpress
     ports:
       - 8080:80
     environment:
@@ -719,7 +917,7 @@ services:
         condition: on-failure
 
   db:
-    image: mysql:5.7
+    image: registry.docker-dca.example:5000/mysql:5.7
     volumes:
       - mysql_db:/var/lib/mysql
     environment:
@@ -788,7 +986,7 @@ networks:
 
 services:
   wordpress:
-    image: wordpress
+    image: registry.docker-dca.example:5000/wordpress
     ports:
       - 8080:80
     environment:
@@ -812,7 +1010,7 @@ services:
           memory: 30M
 
   db:
-    image: mysql:5.7
+    image: registry.docker-dca.example:5000/mysql:5.7
     volumes:
       - mysql_db:/var/lib/mysql
     environment:
@@ -891,7 +1089,7 @@ networks:
 services:
 
   supermario:
-    image: caiodelgadonew/docker-supermario
+    image: registry.docker-dca.example:5000/caiodelgadonew/docker-supermario
     networks:
       - proxy
     deploy:
@@ -926,7 +1124,7 @@ networks:
 
 services:
   traefik:
-    image: "traefik:v2.4"
+    image: "registry.docker-dca.example:5000/traefik:v2.4"
     command:
       - --entrypoints.web.address=:80
       - --providers.docker.swarmMode=true
