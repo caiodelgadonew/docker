@@ -37,7 +37,7 @@ Existem 3 tipos de Volumes:
 
 * **host** - Reside no sistema de arquivos do host do docker e pode ser acessado dentro de um container;
 * **nomeado** - Volume gerenciado e criado pelo Docker, na criação do volume é dado um nome para o mesmo.
-* **anônimo** - Volume gerenciado e criado pelo Docker, na criação do volume não é informado o nome para o mesmo e o Docker se encarrega de nomea-lo com uma hash de 64 caracteres.
+* **anônimo** - Volume gerenciado e criado pelo Docker, na criação do volume não é informado o nome para o mesmo e o Docker se encarrega de nomeá-lo com um hash de 64 caracteres.
 
 Existem alguns tipos de montagem para os volumes. O volume do tipo **host** tem sua montagem realizada como um **bind mount** e existe ainda um volume do tipo **tmpfs mount** o qual reside na memória do sistema (volátil)
 
@@ -57,7 +57,7 @@ Para utilizar volumes no docker utilizamos a opção **-v** ou **--volume** para
 
 Também podemos montar um volume utilizando a opção `--mount` que é mais explicita e verbosa. 
 
-A maior diferença é que a sintaxe do `-v` combina todas as opções no mesmo campo, enquanto a `--mount` separa elas. Contrario a bind mounts, todas as opções para volumes são disponíveis para ambas flags `-v` e `--mount`. 
+A maior diferença é que a sintaxe do `-v` combina todas as opções no mesmo campo, enquanto a `--mount` separa elas. Contrário a bind mounts, todas as opções para volumes são disponíveis para ambas flags `-v` e `--mount`. 
 
 Quando usamos volumes com serviços, somente a opção `--mount` é suportada.
 
@@ -78,7 +78,7 @@ docker container exec servidor ls -lR /srv
 ```
 _Note que os arquivos copiados para a pasta **/srv** do host estão sendo exibidos também na pasta **/srv** do container_
 
-Vamos remover o container e cria-lo novamente utilizando um **volume anônimo**
+Vamos remover o container e criá-lo novamente utilizando um **volume anônimo**
 ```bash
 docker container rm -f servidor
 docker container run -dit --name servidor -v /volume debian
@@ -117,7 +117,7 @@ docker volume ls
 
 Perceba que a diferença de um volume **nomeado** para um **anônimo** é apenas o nome do volume
 
-Para criar o mesmo container utilizando a flag `--mount` precisamos passar o `source` e o`target`
+Para criar o mesmo container utilizando a flag `--mount` precisamos passar o `source` e o `target`
 
 ```bash
 docker container run -dit --name servidor2 --mount source=volume2,target=/volume2  debian

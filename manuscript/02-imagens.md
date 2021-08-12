@@ -137,7 +137,7 @@ O Docker pode criar imagens automaticamente, lendo as instruções de um **Docke
 
 O arquivo de Dockerfile não é case-sensitive, no entanto por convenção utilizamos os parâmetros em maiúsculo para que sua leitura seja mais agradável e de fácil compreensão. O nome do arquivo deve se chamar **Dockerfile** apenas com a letra inicial **D** em maiúsculo.
 
-O Docker executará as instruções do Dockerfile em ordem (Top-down) e deverá sempre iniciar com a instrução **FROM**, as linhas que começam com **#** são tratadas como comentário a menos que a linha seja uma diretiva de analisador vãlida, o caractere **#** em qualquer outro lugar em uma linha é tratado como um argumento.
+O Docker executará as instruções do Dockerfile em ordem (Top-down) e deverá sempre iniciar com a instrução **FROM**, as linhas que começam com **#** são tratadas como comentário a menos que a linha seja uma diretiva de analisador válida, o caractere **#** em qualquer outro lugar em uma linha é tratado como um argumento.
 
 **Definições**
 
@@ -317,7 +317,7 @@ Tratando de poucos `MB` o tempo de construção pode não ser muito expressivo, 
 
 ### Excluindo arquivos do build
 
-Para excluir arquivos que não são relevantes a build, pdemos criar um arquivo `.dockerignore` contendo os padrões de exclusão similares aos do `.gitignore` possibilitando que ignoremos arquivos no build sem ter que modificar nosso repositório.
+Para excluir arquivos que não são relevantes a build, podemos criar um arquivo `.dockerignore` contendo os padrões de exclusão similares aos do `.gitignore` possibilitando que ignoremos arquivos no build sem ter que modificar nosso repositório.
 
 > Para a referência do Docker Ignore veja a [Documentação Oficial](https://docs.docker.com/engine/reference/builder/#dockerignore-file)
 
@@ -422,7 +422,7 @@ docker image build -t dicas:v3 .
 
 #### Dica #4: Remova as dependências desnecessárias
 
-Remover as dependencias desnecessárias e não instalar pacotes de debug é uma boa prática, como por exemplo trocar o `jdk` (Java Development Kit) pelo `jre` (Java Runtime Environment) que é um pacote relativamente menor e contem apenas o necessário para execução. Você pode instalar as ferramentas de debug posteriormente caso necessite. O instalador de pacotes `apt` possui uma flag `--no-install-recommends` que garante que dependencias que não são necessárias não sejam instaladas. Caso precise, adicione elas explicitamente.
+Remover as dependencias desnecessárias e não instalar pacotes de debug é uma boa prática, como por exemplo trocar o `jdk` (Java Development Kit) pelo `jre` (Java Runtime Environment) que é um pacote relativamente menor e contém apenas o necessário para execução. Você pode instalar as ferramentas de debug posteriormente caso necessite. O instalador de pacotes `apt` possui uma flag `--no-install-recommends` que garante que dependencias que não são necessárias não sejam instaladas. Caso precise, adicione elas explicitamente.
 
 
 ![melhores-práticas-4](resources/02melhores-praticas-4.png)
@@ -503,7 +503,7 @@ docker image build -t dicas:v6 .
 
 #### Dica #7:  Utilize Tags mais específicas
 
-Nunca utilize a tag `latest`. Ela pode receber alguma atualização e em um momento de update sua aplicação pode quebrar, dependendo de quanto tempo passou do seu ultimo build. Ao invés disso, utilize tags mais específicas.
+Nunca utilize a tag `latest`. Ela pode receber alguma atualização e em um momento de update sua aplicação pode quebrar, dependendo de quanto tempo passou do seu último build. Ao invés disso, utilize tags mais específicas.
 
 ![melhores-práticas-7](resources/02melhores-praticas-7.png)
 
@@ -563,9 +563,9 @@ Agora temos uma diminuição enorme em nossa imagem pois estamos utilizando uma 
 
 #### Dica #9: Multi-stage build
 
-Multi-stage build é um recurso muito poderoso que apareceu a partir do docker 17.05. Multistage builds são uteis para quem quer otimizar Dockerfiles enquanto mantém eles fáceis de ler e manter.
+Multi-stage build é um recurso muito poderoso que apareceu a partir do docker 17.05. Multi-stage builds são uteis para quem quer otimizar Dockerfiles enquanto mantém eles fáceis de ler e manter.
 
-Antes do Multi-stage build o maior desafio das imagens é de fato manter as imagens pequenas, vimos nos exemplos anteriores que conseguimos, ao utilizar algumas das melhores práticas, diminuir bastante o tamanho da imagem. Utilizando imagens slim ou alpine resolvem boa parte dos nossos problemas mas quando precisamos resolver algo mais  complexo podemos utilizar elas somadas ao Multistage build.
+Antes do Multi-stage build o maior desafio das imagens é de fato manter as imagens pequenas, vimos nos exemplos anteriores que conseguimos, ao utilizar algumas das melhores práticas, diminuir bastante o tamanho da imagem. Utilizando imagens slim ou alpine resolvem boa parte dos nossos problemas mas quando precisamos resolver algo mais  complexo podemos utilizar elas somadas ao multi-stage build.
 
 O `multi-stage build` faz com que possamos utilizar diversas instruções `FROM` em um Dockerfile, e cada instrução pode utilizar uma imagem diferente, fazemos isto por exemplo para subir uma imagem, dentro desta imagem instalar os pacotes e coletar apenas os arquivos necessários diretamente para a imagem subsequente. Com isso temos uma imagem muito mais enxuta e otimizada.
 
