@@ -108,7 +108,7 @@ sudo cp -r ~/dockerfiles /var/lib/docker/volumes/<hash>/_data
 docker container exec servidor ls -lR /volume
 ```
 
-Vamos remover o container e cria-lo novamente utilizando um **volume nomeado**
+Vamos remover o container e criá-lo novamente utilizando um **volume nomeado**
 ```bash
 docker container rm -f servidor
 docker container run -dit --name servidor -v volume:/volume debian
@@ -129,7 +129,7 @@ docker container inspect servidor --format '{{json .Mounts }}'
 docker container inspect servidor2 -f '{{json .Mounts }}'
 ```
 
-Podemos também visualizar de uma maneira mais agradavel ao instalar o `jq` e passar a saida dos comandos acima para o jq
+Podemos também visualizar de uma maneira mais agradável ao instalar o `jq` e passar a saída dos comandos acima para o jq
 ```bash
 sudo apt-get update && sudo apt-get install jq -y
 docker container inspect servidor --format '{{json .Mounts }}' | jq 
@@ -138,7 +138,7 @@ docker container inspect servidor2 -f '{{json .Mounts }}' | jq
 
 ## Selinux Labels
 
-O mode `:z` indica que o conteúdo do bind mount é compartilhado entre multiplos containers
+O mode `:z` indica que o conteúdo do bind mount é compartilhado entre múltiplos containers
 
 O mode `:Z` indica que o conteúdo do bind mount é privado e não compartilhado
 
@@ -160,13 +160,13 @@ Outro tipo de volume é o `tmpfs`. quando criamos um container com `tmpfs` mount
 
 Diferente de volumes e bind mounts, um `tmpfs` é uma montagem temporária, e só persiste na memória do host. Quando o container para, o `tmpfs` mount é removido e os arquivos que foram criados lá não persistem em disco.
 
-`tmpfs` mounts são uteis para armazenar temporariamente informação sensível das quais não gostariamos de persistir no host ou na camada de escrita.
+`tmpfs` mounts são úteis para armazenar temporariamente informação sensível das quais não gostaríamos de persistir no host ou na camada de escrita.
 
 Para criar uma montagem `tmpfs` utilizamos o comando `--tmpfs`
 
 Existem algumas diferenças que precisamos saber entre `tmpfs` e `bind` mounts.
 
-- a flag `--tmpfs` não possibilita o uso de opções configuraveis.
+- a flag `--tmpfs` não possibilita o uso de opções configuráveis.
 - a flag `--tmpfs` não pode ser utilizada com serviços swarm. (Apenas `--mount`)
 
 Utilizando uma montagem do tipo `tmpfs`
@@ -272,7 +272,7 @@ docker container run -dit -v /webdata --name webserver2 debian
 docker container exec webserver2 ls -lR /webdata
 ```
 
-Agora podemos subir um novo container com o 
+Agora podemos subir um novo container com o novo volume e restaurar o backup
 
 ```bash
 docker container run --rm --volumes-from webserver2 -v $(pwd):/backup alpine ash -c "cd /webdata && tar xvf /backup/backup.tar --strip 1"
