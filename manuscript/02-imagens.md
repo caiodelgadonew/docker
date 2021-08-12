@@ -137,7 +137,7 @@ O Docker pode criar imagens automaticamente, lendo as instruções de um **Docke
 
 O arquivo de Dockerfile não é case-sensitive, no entanto por convenção utilizamos os parâmetros em maiúsculo para que sua leitura seja mais agradável e de fácil compreensão. O nome do arquivo deve se chamar **Dockerfile** apenas com a letra inicial **D** em maiúsculo.
 
-O Docker executará as instruções do Dockerfile em ordem (Top-down) e deverá sempre iniciar com a instrução **FROM**, as linhas que começam com **#** são tratadas como comentário a menos que a linha seja uma diretiva de analisador vãlida, o caractere **#** em qualquer outro lugar em uma linha é tratado como um argumento.
+O Docker executará as instruções do Dockerfile em ordem (Top-down) e deverá sempre iniciar com a instrução **FROM**, as linhas que começam com **#** são tratadas como comentário a menos que a linha seja uma diretiva de analisador válida, o caractere **#** em qualquer outro lugar em uma linha é tratado como um argumento.
 
 **Definições**
 
@@ -317,7 +317,7 @@ Tratando de poucos `MB` o tempo de construção pode não ser muito expressivo, 
 
 ### Excluindo arquivos do build
 
-Para excluir arquivos que não são relevantes a build, pdemos criar um arquivo `.dockerignore` contendo os padrões de exclusão similares aos do `.gitignore` possibilitando que ignoremos arquivos no build sem ter que modificar nosso repositório.
+Para excluir arquivos que não são relevantes a build, podemos criar um arquivo `.dockerignore` contendo os padrões de exclusão similares aos do `.gitignore` possibilitando que ignoremos arquivos no build sem ter que modificar nosso repositório.
 
 > Para a referência do Docker Ignore veja a [Documentação Oficial](https://docs.docker.com/engine/reference/builder/#dockerignore-file)
 
@@ -422,7 +422,7 @@ docker image build -t dicas:v3 .
 
 #### Dica #4: Remova as dependências desnecessárias
 
-Remover as dependencias desnecessárias e não instalar pacotes de debug é uma boa prática, como por exemplo trocar o `jdk` (Java Development Kit) pelo `jre` (Java Runtime Environment) que é um pacote relativamente menor e contem apenas o necessário para execução. Você pode instalar as ferramentas de debug posteriormente caso necessite. O instalador de pacotes `apt` possui uma flag `--no-install-recommends` que garante que dependencias que não são necessárias não sejam instaladas. Caso precise, adicione elas explicitamente.
+Remover as dependencias desnecessárias e não instalar pacotes de debug é uma boa prática, como por exemplo trocar o `jdk` (Java Development Kit) pelo `jre` (Java Runtime Environment) que é um pacote relativamente menor e contém apenas o necessário para execução. Você pode instalar as ferramentas de debug posteriormente caso necessite. O instalador de pacotes `apt` possui uma flag `--no-install-recommends` que garante que dependencias que não são necessárias não sejam instaladas. Caso precise, adicione elas explicitamente.
 
 
 ![melhores-práticas-4](resources/02melhores-praticas-4.png)
