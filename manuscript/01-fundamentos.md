@@ -2,7 +2,7 @@
 
 ## O que é o Docker
 
-Docker é uma plataforma Open Source escrita em Go  (Linguagem de programação em alta performance desenvolvida pela Google)  que ajuda a criação e a administração de ambientes isolados.
+Docker é uma plataforma Open Source escrita em Go (Linguagem de programação em alta performance desenvolvida pela Google)  que ajuda a criação e a administração de ambientes isolados.
 
 Com a utilização do Docker podemos gerenciar toda a infraestutura de uma aplicação, bem como garantir que ambientes de desenvolvimento, homologação e produção contenham os mesmos componentes e versões de aplicações, a fim de minimizar impactos no processo de desenvolvimento e entrega de software.
 
@@ -12,7 +12,7 @@ O Docker trabalha com uma virtualização a nível do sistema operacional, onde 
 
 ## Por que usar Docker
 
-Em 2013, Docker introduziu o que se tornou o padrão da industria para containers, trouxe uma maneira simples, rápida e eficiente de executar aplicações sem a complexidade de uma máquina virtual.
+Em 2013, Docker introduziu o que se tornou o padrão da indústria para containers, trouxe uma maneira simples, rápida e eficiente de executar aplicações sem a complexidade de uma máquina virtual.
 
 Docker garante um ecossistema consistente, fazendo com que o desenvolvedor possa trabalhar sem se preocupar, por exemplo, com a abertura de tickets para uma equipe de infraestrutura provisionar um ambiente por completo, atrasando o trabalho de entrega de software.
 
@@ -20,9 +20,9 @@ Existem diversas engines e runtimes de containers e até é possível utilizar c
 
 ## O que é um container
 
-Um container consiste de um ambiente completo (uma aplicação e todas suas dependências, bibliotecas, binários, arquivos de configuração) em um unico pacote. Ao containerizar uma plataforma de aplicação e suas dependências as diferenças em distribuições de sistemas operacionais e camadas inferiores da infraestrutura são abstraídas.
+Um container consiste de um ambiente completo (uma aplicação e todas suas dependências, bibliotecas, binários, arquivos de configuração) em um único pacote. Ao containerizar uma plataforma de aplicação e suas dependências as diferenças em distribuições de sistemas operacionais e camadas inferiores da infraestrutura são abstraídas.
 
-> Imagine que o container Docker é como se fosse um container real em um navio (servidor), todos os containeres estão lado a lado, porém seu conteúdo (ecossistema) não tem interferencia de outros containers.
+> Imagine que o container Docker é como se fosse um container real em um navio (servidor), todos os containeres estão lado a lado, porém seu conteúdo (ecossistema) não tem interferência de outros containers.
 
 Podemos dizer também que um container é a unidade mínima computacional do Docker, ou seja, o menor recurso que o Docker pode fornecer.
 
@@ -34,13 +34,13 @@ O Docker possui basicamente duas versões, a versão da comunidade (Community Ed
 
 A versão Community é de uso gratuito e também tem seu código aberto.
 
-A maioria dos sistemas docker em produção utiliza a versão Docker Community Edition. O licenciamento anual da versão Enterprise custa cerca de US$750 por nó, o que torna o processo inviável para algumas empresas.
+A maioria dos sistemas Docker em produção utiliza a versão Docker Community Edition. O licenciamento anual da versão Enterprise custa cerca de US$750 por nó, o que torna o processo inviável para algumas empresas.
 
-> **ATENÇÃO:** Para fins da prova Docker Certified Associate **(Docker DCA)** a versão Community deve ser utilizada apenas em ambientes de desenvolvimento e não deve ser utilizada em produção. Para produção a unica versão a ser utilizada é a Enterprise Edition.
+> **ATENÇÃO:** Para fins da prova Docker Certified Associate **(Docker DCA)** a versão Community deve ser utilizada apenas em ambientes de desenvolvimento e não deve ser utilizada em produção. Para produção a única versão a ser utilizada é a Enterprise Edition.
 
-A versão enterprise conta com recursos como o **UCP** (Universal Control Plane) e o **DTR** (Docker Trusted Registry), bem como suporte da Docker Inc.
+A versão Enterprise conta com recursos como o **UCP** (Universal Control Plane) e o **DTR** (Docker Trusted Registry), bem como suporte da Docker Inc.
 
-A recomendação Mínima para a versão enterprise do Docker EE é:
+A recomendação mínima para a versão Enterprise do Docker EE é:
 * 8GB de RAM para nós Managers
 * 4GB de RAM para nós Workers
 * 2vCPUs para nós Managers
@@ -65,16 +65,16 @@ Para instalar o Virtualbox siga os passos:
 
 1. Acesse a página de [Downloads do Virtualbox](https://www.virtualbox.org/wiki/Downloads) e faça o download da versão coorespondente ao seu sistema operacional.
 2. Execute a instalação do pacote do Virtualbox.
-2.1. Para linux execute o programa de instalação de pacotes (`sudo dpkg -i <pacote>.deb` para sistemas debian-like ou `sudo rpm -i <pacote>.rpm`)
+2.1. Para Linux execute o programa de instalação de pacotes (`sudo dpkg -i <pacote>.deb` para sistemas debian-like ou `sudo rpm -i <pacote>.rpm`)
 2.2. Para Windows, clique sob o instalador e avance até o final da instalação.
 2.3. Para MacOS, clique sob o instalador e avance até o final da instalação.
 
 
 Para Instalar o vagrant siga os passos:
 
-1. Acesse a página de [Downloads do Vagrant](https://www.vagrantup.com/downloads.html) e faça o Download da versão correspondente ao seu sistema operacional
-2. Execute a instalação do pacote do vagrant
-2.1. Para linux execute o programa de instalação de pacotes (`sudo dpkg -i <pacote>.deb` para sistemas debian-like ou `sudo rpm -i <pacote>.rpm`)
+1. Acesse a página de [Downloads do Vagrant](https://www.vagrantup.com/downloads.html) e faça o download da versão correspondente ao seu sistema operacional.
+2. Execute a instalação do pacote do vagrant.
+2.1. Para Linux execute o programa de instalação de pacotes (`sudo dpkg -i <pacote>.deb` para sistemas debian-like ou `sudo rpm -i <pacote>.rpm`)
 2.2. Para Windows, clique sob o instalador e avance até o final da instalação.
 2.3. Para MacOS, clique sob o instalador e avance até o final da instalação.
 3. Após a instalação abra um terminal ou um prompt de comando e execute o comando `vagrant --version` para verificar se o pacote foi instalado com sucesso.
@@ -174,7 +174,7 @@ O Docker utiliza de recursos do linux como por exemplo namespaces, cgroups dentr
 * **UTS**: Unix Timesharing System (Kernel e Identificadores)
 * **NET**: Networking
 
-Os Namespaces fornecem isolamento para os containers, limitando seu acesso ao recursos do sistema e a outros namespaces. Isto significa, por exemplo, que um usuário root dentro de um container é diferente de um usuário root da máquina hospedeira.
+Os Namespaces fornecem isolamento para os containers, limitando seu acesso aos recursos do sistema e a outros namespaces. Isto significa, por exemplo, que um usuário root dentro de um container é diferente de um usuário root da máquina hospedeira.
 
 Com o isolamento, os sistemas em execução nos containers tem suas próprias árvores de processo, sistemas de arquivos, conexões de rede e muito mais.
 
@@ -188,10 +188,10 @@ Com o isolamento, os sistemas em execução nos containers tem suas próprias á
 
 * **cpu**: Divisão de CPU por containers.
 * **cpuset**: CPU Masks, para limitar threads
-* **memory**: Memoria
+* **memory**: Memória
 * **device**: Dispositivos 
 
-Os containers trabalham com cgroups (Control Groups) que fazem isolamento dos recursos físicos da maquina. Em geral os cgrops podem ser utilizados para controlar estes recursos tais como limites e reserva de CPU, limites e reserva de memória, dispositivos, etc…
+Os containers trabalham com cgroups (Control Groups) que fazem isolamento dos recursos físicos da máquina. Em geral os cgroups podem ser utilizados para controlar estes recursos tais como limites e reserva de CPU, limites e reserva de memória, dispositivos, etc…
 
 ## Instalação do Docker 
 
@@ -296,9 +296,9 @@ $ vagrant ssh node02
 
 Os passos a seguir devem ser executados nas máquinas `node01` e `registry`, não esqueça de abrir um terminal novo para cada máquina e executar o comando `vagrant ssh <host>`
 
-A Docker disponibiliza um script de conveniência, que trata-se de uma maneira simples e rápida para instalar o Docker para ambientes de desenvolvimento, este script faz a validação da distribuição linux bem como instala os pacotes necessários para o funcionamento do Docker. 
+A Docker disponibiliza um script de conveniência, que trata-se de uma maneira simples e rápida para instalar o Docker para ambientes de desenvolvimento, este script faz a validação da distribuição Linux bem como instala os pacotes necessários para o funcionamento do Docker. 
 
-Para instalar o docker através do script de conveniência basta executar o comando
+Para instalar o Docker através do script de conveniência basta executar o comando:
 
 ```bash
 $ sudo curl -fsSL https://get.docker.com | bash
@@ -325,7 +325,7 @@ $ sudo curl https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/com
 
 ### Teste de Execução
 
-Para garantirmos que o docker foi instalado corretamente e esta funcional, podemos rodar nosso primeiro container e verificar o retorno na tela.
+Para garantirmos que o docker foi instalado corretamente e está funcional, podemos rodar nosso primeiro container e verificar o retorno na tela.
 
 ```bash
 $ docker container run --rm -it hello-world
@@ -336,8 +336,8 @@ $ docker container run --rm -it hello-world
 Agora que rodamos nosso primeiro container, precisamos entender alguns componentes básicos da sua arquitetura e seu funcionamento.
 
 Ao executar o container com a imagem `hello-world` o Docker fez os seguintes passos:
-1. O `Docker Client` se comunicou com o `Docker Daemon`
-2. O `Docker Daemon` fez o download da imagem `hello-world` no Docker Hub
+1. O `Docker Client` se comunicou com o `Docker Daemon`.
+2. O `Docker Daemon` fez o download da imagem `hello-world` no Docker Hub.
 3. O `Docker Daemon` criou um novo container, através da imagem que rodou o executável que produz o texto que vimos no terminal.
 4. O `Docker Daemon` enviou o texto diretamente para o `Docker Client` que enviou para nosso terminal.
 
@@ -351,12 +351,12 @@ O Docker Client é o pacote `docker-ce-cli` ele fornece os comandos do lado do c
 
 ### Docker Daemon 
 
-O Docker Daemon é o pacote `docker-ce` ele é o servidor propriamente dito, que receberá os comandos através do Docker Client e fornecerá os recursos de virtualização a nivel de sistema operacional.
+O Docker Daemon é o pacote `docker-ce` ele é o servidor propriamente dito, que receberá os comandos através do Docker Client e fornecerá os recursos de virtualização a nível de sistema operacional.
 
 
 ### Docker Registry
 
-O Docker Registry é o local de armazenamento de imagens docker, normalmente o Docker hub, de onde o Docker Daemon receberá as imagens a serem executadas no processo de criação de um container.
+O Docker Registry é o local de armazenamento de imagens Docker, normalmente o Docker hub, de onde o Docker Daemon receberá as imagens a serem executadas no processo de criação de um container.
 
 ## Comandos Essenciais
 
@@ -374,7 +374,7 @@ O primeiro passo para entendermos os comandos do docker é visualizar sua lista 
 * `docker system`
 * `docker volume`
 
-Para cada comando de gerenciamento acima, temos diversos subcomandos a serem executados, muitos deles são parecidos com comandos linux como por exemplo `ls`, `rm`, dentre outros
+Para cada comando de gerenciamento acima, temos diversos subcomandos a serem executados, muitos deles são parecidos com comandos Linux como por exemplo `ls`, `rm`, dentre outros.
 
 Antigamente o comando utilizado para listar containers era o comando `docker ps` que ainda existe na documentação, porém é indicado que seja utilizado o novo comando `docker container ls`.
 
@@ -385,19 +385,19 @@ Existem diversos outros comandos que iremos ver ao longo do curso.
 
 ### Executando comandos
 
-Antes de executar os comandos do docker, vamos conectar na máquina node01.
+Antes de executar os comandos do docker, vamos conectar na máquina `node01`.
 
 ```bash
 vagrant ssh node01
 ``` 
 
 
-Para visualizar informações do ambiente, podemos utilizar o comando **docker system info** o qual exibirá informações do Docker como versão, quantidade de containers em execução, storage drivers, entre outros
+Para visualizar informações do ambiente, podemos utilizar o comando **docker system info** o qual exibirá informações do Docker como versão, quantidade de containers em execução, storage drivers, entre outros.
 ```bash
 docker system info
 docker info
 ```
-_Os comandos listados acima são equivalentes_
+_Os comandos listados acima são equivalentes._
 
 Para listar containers, imagens, redes e volumes no docker, utilizamos o comando **docker** \<comando\> **ls**
 ```bash
@@ -421,24 +421,24 @@ Para efetuar o download da imagem utilizamos o comando **docker image pull**
 docker image pull debian
 ```
 
-Para executar um contâiner, utilizamos o comando **docker container run**
+Para executar um container, utilizamos o comando **docker container run**
 ```bash
 docker container run -dit --name debian1 --hostname c1 debian
 ```
 **Descrição do comando:**
-* **docker container run  (...) debian** - Executa um container, sendo o ultimo parâmetro o nome da imagem  a ser utilizada  
+* **docker container run  (...) debian** - Executa um container, sendo o último parâmetro o nome da imagem a ser utilizada  
 * **-dit** - Executa um container como processo (**d** = Detached), habilitando a interação com o container (**i** = Interactive) e disponibiliza um pseudo-TTY(**t** = TTY)
 * **--name** - Define o nome do container
 * **--hostname** - Define o hostname do container
 
-Agora que temos nosso primeiro contâiner em execução, podemos listar os containers(**docker container ls**) e conectar ao mesmo através do comando **docker container attach**
+Agora que temos nosso primeiro container em execução, podemos listar os containers (**docker container ls**) e conectar ao mesmo através do comando **docker container attach**
 ```bash
 docker container ls
 docker container attach debian1
 ```
-_Note que ao se conectar ao container a PS1 será modificada para `root@c1:/#`
+_Note que ao se conectar ao container a PS1 será modificada para `root@c1:/#` ._
 
-Execute alguns comandos no container
+Execute alguns comandos no container:
 ```bash
 ip -c a
 hostname
