@@ -168,11 +168,11 @@ O prometheus será acessivel em nosso cluster na porta `9090`, vamos acessar ent
 
 Ao clicar em `Status` e em seguida em `Targets` podemos ter acesso aos targets do prometheus.
 
-![Prometheus Targets](resources/08statustargets.png)
+![Prometheus Targets](resources/07statustargets.png)
 
 Nessa lista podemos verificar todos os serviços que estão passando pelo prometheus para coleta de métricas.
 
-![Targets](resources/08targets.png)
+![Targets](resources/07targets.png)
 
 
 Podemos também voltar na tela inicial ao clicar em `Prometheus` e digitar uma query utilizando o [PromQL (Prometheus Query Language)](https://prometheus.io/docs/prometheus/latest/querying/basics/) para verificar as métricas que estão sendo coletadas.
@@ -182,13 +182,13 @@ Vamos digitar por exemplo a seguinte query para verificar a quantidade de memór
 ```sql
 node_memory_MemFree_bytes
 ```
-![Query Node Memory Free](resources/08querymemfree.png)
+![Query Node Memory Free](resources/07querymemfree.png)
 
 
 Será exibida a quantidade de memória livre disponível em cada um dos nós. Podemos também clicar em `Graph` para visualizar os dados em formato de gráfico, bem como escolher um período específico de visualização de dados.
 
 
-![Graph Node Memory Free](resources/08graphmemfree.png)
+![Graph Node Memory Free](resources/07graphmemfree.png)
 
 ### Grafana
 
@@ -198,34 +198,34 @@ Acesse o grafana através do endereço http://master.docker-dca.example:3000/
 
 Efetue o login com o usuário e senha `admin`/`admin` e clique em `Log in`
 
-![Grafana Login](resources/08grafanalogin.png)
+![Grafana Login](resources/07grafanalogin.png)
 
 Altere a senha padrão para `caiodelgadonew@youtube`  e clique em `Submit`
-![Grafana Login](resources/08grafanapass.png)
+![Grafana Login](resources/07grafanapass.png)
 
 A primeira coisa que precisamos fazer no grafana é configurar um `data source` que será a fonte de fornecimento de dados para nossos gráficos.
 
 Para isto, clique na engrenagem de configuração, em seguida clique em em ` Add data source`
-![Grafana Config](resources/08grafanaconfig.png)
+![Grafana Config](resources/07grafanaconfig.png)
 
 O grafana aceita diversos `data sources`, vamos selecionar o Prometheus e clicar em `Select`
 
-![Prometheus Data Source](resources/08prometheusdatasource.png)
+![Prometheus Data Source](resources/07prometheusdatasource.png)
 
 Iremos configurar a URL HTTP como `http://10.20.20.100:9090` e clicar em `Save & test`
 
-![Prometheus Data Source Configuration](resources/08prometheusconfig.png)
+![Prometheus Data Source Configuration](resources/07prometheusconfig.png)
 
 Ao salvar será exibida uma mensagem que o `data source` está em funcionamento.
 
-![Data Source Working](resources/08datasourceworking.png)
+![Data Source Working](resources/07datasourceworking.png)
 
 
 ### Importando Dashboards
 
 Agora que temos nosso `data source` em funcionamento, podemos clicar no icone `+` e em seguida em `import` para importar um dashboard
 
-![Import Dashboard](resources/08importdashboard.png)
+![Import Dashboard](resources/07importdashboard.png)
 
 Através desta opção podemos importar diversos dashboards pré configurados no website do Grafana e adaptar as nossas necessidades.
 
@@ -233,7 +233,7 @@ Abra um novo navegador no endereço https://grafana.com/grafana/dashboards para 
 
 Altere a pesquisa para `cadvisor exporter` e selecione o dashboard [CAdvisor exporter](https://grafana.com/grafana/dashboards/14282)
 
-![CAdvisor Dashboard](resources/08cadvisor.png)
+![CAdvisor Dashboard](resources/07cadvisor.png)
 
 Podemos efetuar o download do dashboard de duas maneiras:
 1. Copiando o ID e colando na tela de import do grafana.
@@ -241,21 +241,21 @@ Podemos efetuar o download do dashboard de duas maneiras:
 
 Como estamos trabalhando com laboratórios de estudo, vamos efetuar o download do JSON.
 
-![Get Cadvisor Dashboard](resources/08getdashboard.png)
+![Get Cadvisor Dashboard](resources/07getdashboard.png)
 
 
 Cole o conteúdo do `JSON` no campo `Import via panel json` e clique em `Load`
 
-![Load Dashboard](resources/08loaddashboard.png)
+![Load Dashboard](resources/07loaddashboard.png)
 
 
 Selecione a fonte de dados `Prometheus` e clique em `Import`
 
-![Import Dashboard Configuration](resources/08importing.png)
+![Import Dashboard Configuration](resources/07importing.png)
 
 Será exibida uma tela com o `CAdvisor exporter`, onde podemos visualizar dados de todos os containers que estão sendo executados, bem como filtrar por nodes e containers.
 
-![Cadvisor exporter](resources/08cadvisordashboard.png)
+![Cadvisor exporter](resources/07cadvisordashboard.png)
 
 Vamos importar agora um dashboard para o Node-Exporter
 
@@ -264,14 +264,14 @@ Abra um novo navegador no endereço https://grafana.com/grafana/dashboards para 
 
 Altere a pesquisa para `node exporter full` e organize por `downloads`  selecione o dashboard [Node Exporter Full](https://grafana.com/grafana/dashboards/1860)
 
-![Node Exporter Full](resources/08nodeexporterfull.png)
+![Node Exporter Full](resources/07nodeexporterfull.png)
 
 Faça o Download do JSON e importe o dashboard da mesma maneira que fizemos para o `Cadvisor`
 
 Escolha o `data source` do `Prometheus` e clique em `import`
 
-![Import Node Exporter Full](resources/08nodeexporterconfig.png)
+![Import Node Exporter Full](resources/07nodeexporterconfig.png)
 
 Será exibido o dashboard do `Node Exporter` onde teremos acesso a métricas do hardware das máquinas como `CPU`, `Memória`, `Disco`, `Rede`, dentre diversas outras métricas.
 
-![Node Exporter Dashboard](resources/08dashboardnodeexporter.png)
+![Node Exporter Dashboard](resources/07dashboardnodeexporter.png)

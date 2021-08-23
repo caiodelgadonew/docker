@@ -28,9 +28,9 @@ O conteúdo é ministrado ao vivo no canal do Youtube
 [04 - Redes](manuscript/04-redes.md)  
 [05 - Docker-Compose](manuscript/05-docker-compose.md)  
 [06 - Swarm](manuscript/06-swarm.md)  
+[07 - Monitoramento](manuscript/07-monitoring.md)  
 
 
 _In Progress_
 * Enterprise
 * Tools
-* Monitoramento
