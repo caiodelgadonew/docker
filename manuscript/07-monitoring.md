@@ -1,4 +1,4 @@
-# Capítulo 08 - Monitoramento
+# Capítulo 07 - Monitoramento
 
 Agora que já sabemos como efetuar o deploy das stacks e entendemos como funcionam os placements, podemos aproveitar estes recursos para fazer o deploy de uma stack de monitoramento.
 
