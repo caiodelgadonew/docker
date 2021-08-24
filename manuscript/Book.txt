@@ -5,3 +5,4 @@
 04-network.md
 05-docker-compose.md
 06-swarm.md
+07-monitoring.md
