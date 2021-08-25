@@ -6,3 +6,4 @@
 05-docker-compose.md
 06-swarm.md
 07-monitoring.md
+08-tools.md
