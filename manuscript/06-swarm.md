@@ -608,7 +608,7 @@ $ mysql -h node01.docker-dca.example -u root -pcaiodelgadonew123
 
 Destrua o serviço
 ```bash
-$ docker service rm -f mysql_database
+$ docker service rm mysql_database
 ```
 
 ## Network
