@@ -156,7 +156,7 @@ Vamos criar um diretório para armazenar os dockerfiles e criar nosso primeiro D
 ```bash
 mkdir -p ~/dockerfiles/echo-container
 cd ~/dockerfiles/echo-container
-vim ~/Dockerfile
+vim Dockerfile
 ```
 ```dockerfile
 FROM         alpine
@@ -665,5 +665,5 @@ docker container run --rm -it multistage:v3
 ### Removendo todas as imagens
 
 ```bash
-docker image pune -a
+docker image prune -a
 ``` 
