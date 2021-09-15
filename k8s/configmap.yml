@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-app1
+data:
+  initial_refresh_value: "4"
+  ui_properties_file_name: "user-interface.properties"
+  user-interface.properties: |
+    color.good=green
+    color.bad=red
