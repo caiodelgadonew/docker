@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx-dca
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-dca
+  template:
+    metadata:
+      labels:
+        app: nginx-dca
+    spec:
+      containers:
+      - name: nginx-dca
+        image: nginx
+        ports:
+        - containerPort: 80
