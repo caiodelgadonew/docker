@@ -324,7 +324,7 @@ kind: Pod
 metadata:
   name: nginx
   labels:
-    app: hello-world
+    app: nginx-dca 
 spec:
   containers:
   - name: nginx
@@ -355,6 +355,8 @@ kind: Service
 metadata:
   name: nginx-dca
 spec:
+  selector:
+    app: nginx-dca
   ports:
   - port: 80
     protocol: TCP
@@ -663,6 +665,7 @@ spec:
 Podemos agora conectar no pod e verificar nosso volume com o `configMap`
 
 ```bash
+$ kubectl apply -f pod-configmap.yml 
 $ kubectl exec -it pod/app1 -- ash
 $ ls /etc/configs
 $ cat /etc/configs/initial_refresh_value
