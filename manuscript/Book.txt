@@ -7,3 +7,6 @@
 06-swarm.md
 07-monitoring.md
 08-tools.md
+09-kubernetes.md
+10-enterprise.md
+11-conclusao.md
