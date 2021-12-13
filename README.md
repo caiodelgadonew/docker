@@ -29,9 +29,7 @@ O conteúdo é ministrado ao vivo no canal do Youtube
 [05 - Docker-Compose](manuscript/05-docker-compose.md)  
 [06 - Swarm](manuscript/06-swarm.md)  
 [07 - Monitoramento](manuscript/07-monitoring.md)  
-[08 - Tools](manuscript/08-tools.md)
+[08 - Tools](manuscript/08-tools.md)  
 [09 - Kubernetes](manuscript/09-kubernetes.md)  
-
-
-_In Progress_
-* Enterprise
+[10 - Enterprise](manuscript/10-enterprise.md)  
+[11 - Conclusão](manuscript/11-conclusao.md)  
